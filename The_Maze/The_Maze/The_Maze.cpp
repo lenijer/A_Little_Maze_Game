@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 #include <conio.h>
+#include "Object.h"
+#include "Player.h"
 
 std::vector<std::string> Menu_Options = {
     "Play Game",
@@ -17,34 +19,9 @@ std::vector<std::string> Menu_Options = {
 const int x = 20;
 const int y = 20;
 
-std::string Floor[x][y] = { 
-                    {"W","W","W","W","W","W","W","W","W","W","W","S","W","W","W","W","W","W","W","W"},
-                    {"W"," ","W"," "," "," "," "," "," "," ","W"," ","W"," "," "," ","W"," "," ","W"},
-                    {"W"," "," "," ","W","W","W","W","W","W","W"," ","W"," ","W"," "," "," ","W","W"},
-                    {"W"," ","W","W","W"," "," "," "," "," ","W"," ","W","W","W","W","W"," ","W","W"},
-                    {"W"," "," "," "," "," ","W"," ","W"," ","W"," "," "," "," "," "," "," "," ","W"},
-                    {"W"," ","W"," ","W"," ","W"," ","W"," ","W","W","W","W","W","W"," ","W"," ","W"},
-                    {"W"," ","W"," ","W"," ","W"," ","W"," ","W"," ","W"," "," "," "," ","W"," ","W"},
-                    {"W"," ","W"," ","W"," ","W"," ","W"," ","W"," ","W","W","W","W"," ","W"," ","W"},
-                    {"W"," ","W"," ","W"," ","W"," ","W"," "," "," ","W"," "," "," "," ","W"," ","W"},
-                    {"W"," ","W"," ","W"," ","W","W","W","W"," ","W","W","W","W","W"," ","W"," ","W"},
-                    {"W"," ","W"," ","W"," "," "," ","W"," "," "," "," "," "," "," "," ","W"," ","W"},
-                    {"W"," ","W"," ","W","W","W","W","W","W","W","W","W","W","W","W","W","W"," ","W"},
-                    {"W"," ","W"," ","W"," "," "," "," "," "," "," "," ","W"," "," "," ","W","W","W"},
-                    {"W"," ","W"," ","W","W","W","W","W","W","W","W"," ","W","W"," "," "," "," ","W"},
-                    {"W"," ","W"," ","W"," "," "," "," "," "," "," "," "," "," "," ","W","W","W","W"},
-                    {"W"," ","W","W","W"," ","W","W","W","W","W","W","W","W","W"," "," ","W"," ","W"},
-                    {"W"," "," "," "," "," "," "," "," "," "," "," "," "," ","W","W"," ","W"," ","W"},
-                    {"W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"," "," ","W"," ","W"},
-                    {"W"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ","W"},
-                    {"W","E","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"}};
-
-const char Player = 'P';
-int P_x = 0; //player x
-int P_y = 11; //player y
-
 void menu();
 void RunMaze();
+void Floor1(std::string Map[x][y]);
 
 int main()
 {
@@ -60,7 +37,6 @@ void menu() {
 
     while (true) {
         system("cls");
-        RunMaze();
         DisplayText = "Main Menu\n";
 
         for (int i = 0; i < Menu_Options.size(); i++) {
@@ -110,18 +86,16 @@ void menu() {
 void RunMaze() {
     char key;
     std::string Map[x][y];
+    Player* Pl = new Player();
+    Pl->SetCharacter('P');
+    Pl->SetX(0);
+    Pl->SetY(11);
 
     while (true) {
         system("cls");
 
-        for (int i = 0; i < x; i++) {
-            for (int j = 0; j < y; j++) {
-                Map[i][j] = Floor[i][j];
-                if (i == P_x && j == P_y) {
-                    Map[i][j] = Player;
-                }
-            }
-        }
+        Floor1(Map);
+        Map[Pl->GetX()][Pl->GetY()] = Pl->GetCharacter();
 
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
@@ -136,27 +110,27 @@ void RunMaze() {
         key = _getch();
 
         if (key == 'S' || key == 's') {
-            if (Map[P_x + 1][P_y] != "W") {
-                P_x++;
+            if (Map[Pl->GetX() + 1][Pl->GetY()] != "W") {
+                Pl->SetX(Pl->GetX() + 1);
             }
         }
         if (key == 'W' || key == 'w') {
-            if ((Map[P_x - 1][P_y] != "W") && (Floor[P_x][P_y] != "S")) {
-                P_x--;
+            if ((Map[Pl->GetX() - 1][Pl->GetY()] != "W") && (Pl->GetX() != 0)) {
+                Pl->SetX(Pl->GetX() - 1);
             }
         }
         if (key == 'D' || key == 'd') {
-            if (Map[P_x][P_y + 1] != "W") {
-                P_y++;
+            if (Map[Pl->GetX()][Pl->GetY() + 1] != "W") {
+                Pl->SetY(Pl->GetY() + 1);
             }
         }
         if (key == 'A' || key == 'a') {
-            if (Map[P_x][P_y - 1] != "W") {
-                P_y--;
+            if (Map[Pl->GetX()][Pl->GetY() - 1] != "W") {
+                Pl->SetY(Pl->GetY() - 1);
             }
         }
 
-        if (Map[P_x][P_y] == "E") {
+        if (Map[Pl->GetX()][Pl->GetY()] == "E") {
             exit(0);
         }
 
@@ -166,5 +140,58 @@ void RunMaze() {
         if ((int)key == 27) { /*https://theasciicode.com.ar/ascii-control-characters/escape-ascii-code-27.html*/
             exit(0);
         }
+    }
+}
+
+void Floor1(std::string Map[x][y]) {
+    Object* ny; //used to add new objects
+    std::vector <Object*> Items;
+
+    std::string Floor[x][y] = {
+                    {"W","W","W","W","W","W","W","W","W","W","W","S","W","W","W","W","W","W","W","W"},
+                    {"W"," ","W"," "," "," "," "," "," "," ","W"," ","W"," "," "," ","W"," "," ","W"},
+                    {"W"," "," "," ","W","W","W","W","W","W","W"," ","W"," ","W"," "," "," ","W","W"},
+                    {"W"," ","W","W","W"," "," "," "," "," ","W"," ","W","W","W","W","W"," ","W","W"},
+                    {"W"," "," "," "," "," ","W"," ","W"," ","W"," "," "," "," "," "," "," "," ","W"},
+                    {"W"," ","W"," ","W"," ","W"," ","W"," ","W","W","W","W","W","W"," ","W"," ","W"},
+                    {"W"," ","W"," ","W"," ","W"," ","W"," ","W"," ","W"," "," "," "," ","W"," ","W"},
+                    {"W"," ","W"," ","W"," ","W"," ","W"," ","W"," ","W","W","W","W"," ","W"," ","W"},
+                    {"W"," ","W"," ","W"," ","W"," ","W"," "," "," ","W"," "," "," "," ","W"," ","W"},
+                    {"W"," ","W"," ","W"," ","W","W","W","W"," ","W","W","W","W","W"," ","W"," ","W"},
+                    {"W"," ","W"," ","W"," "," "," ","W"," "," "," "," "," "," "," "," ","W"," ","W"},
+                    {"W"," ","W"," ","W","W","W","W","W","W","W","W","W","W","W","W","W","W"," ","W"},
+                    {"W"," ","W"," ","W"," "," "," "," "," "," "," "," ","W"," "," "," ","W","W","W"},
+                    {"W"," ","W"," ","W","W","W","W","W","W","W","W"," ","W","W"," "," "," "," ","W"},
+                    {"W"," ","W"," ","W"," "," "," "," "," "," "," "," "," "," "," ","W","W","W","W"},
+                    {"W"," ","W","W","W"," ","W","W","W","W","W","W","W","W","W"," "," ","W"," ","W"},
+                    {"W"," "," "," "," "," "," "," "," "," "," "," "," "," ","W","W"," ","W"," ","W"},
+                    {"W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"," "," ","W"," ","W"},
+                    {"W"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ","W"},
+                    {"W","E","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"} };
+
+    for (int i = 0; i < x; i++) {
+        for (int j = 0; j < y; j++) {
+            Items.push_back(ny = new Object());
+
+            if (Floor[i][j] == "W") {
+                ny->SetCharacter('W');
+            }
+            if (Floor[i][j] == " ") {
+                ny->SetCharacter(' ');
+            }
+            if (Floor[i][j] == "S") {
+                ny->SetCharacter('S');
+            }
+            if (Floor[i][j] == "E") {
+                ny->SetCharacter('E');
+            }
+
+            ny->SetX(i);
+            ny->SetY(j);
+        }
+    }
+
+    for (int i = 0; i < Items.size(); i++) {
+        Map[Items[i]->GetX()][Items[i]->GetY()] = Items[i]->GetCharacter();
     }
 }
