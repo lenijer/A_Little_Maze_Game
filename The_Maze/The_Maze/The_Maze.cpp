@@ -47,7 +47,7 @@ int P_y = 11; //player y
 void menu();
 void RunMaze();
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam); //turttoral used https://cplusplus.com/forum/windows/219154/
+LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam); //turtoral used https://cplusplus.com/forum/windows/219154/
 
 int main()
 {
