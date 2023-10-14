@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 #include <conio.h>
-#include <Windows.h>
+#include "Window.h"
 
 std::vector<std::string> Menu_Options = {
     "Play Game",
@@ -47,48 +47,11 @@ int P_y = 11; //player y
 void menu();
 void RunMaze();
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam); //turtoral used https://cplusplus.com/forum/windows/219154/
-
 int main()
 {
-    WNDCLASS windowClass = { 0 };
-    windowClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-    windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-    windowClass.hInstance = NULL;
-    windowClass.lpfnWndProc = WndProc;
-    windowClass.lpszClassName = L"Window in Console"; //"Window in Console"
-    windowClass.style = CS_HREDRAW | CS_VREDRAW;
-    if (!RegisterClass(&windowClass)) {
-        MessageBox(NULL, L"Could not register class", L"Error", MB_OK);
-    }
-    //HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_POPUP, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), NULL, NULL, NULL, NULL);
-    HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_POPUP, 0, 0, 1400, 700, NULL, NULL, NULL, NULL);
-    ShowWindow(windowHandle, SW_RESTORE);
-    MSG messages;
-    while (GetMessage(&messages, NULL, 0, 0) > 0) {
-        TranslateMessage(&messages);
-        DispatchMessage(&messages);
-    }
-    DeleteObject(windowHandle);
-    return messages.wParam;
-    //menu();
-    FreeConsole();
-}
-
-LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
-    switch (message)
-    {
-    case WM_CHAR:
-        if (wparam == VK_ESCAPE) {
-            DestroyWindow(hwnd);
-        }
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        break;
-    default:
-        return DefWindowProc(hwnd, message, wparam, lparam);
-    }
-    return 0;
+    Window* window = new Window(1400, 700);
+    window->RunWindow();
+    delete window;
 }
 
 void menu() {
