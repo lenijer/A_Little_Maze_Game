@@ -16,13 +16,40 @@ Window::Window(int sizeX, int sizeY, int SpawnLocX, int SpawnLocY) {
     ScreenLocY = SpawnLocY;
 }
 
+void OnSize(HWND hwnd, UINT flag, int width, int height)
+{
+    // Handle resizing
+}
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
     switch (message)
     {
+    case WM_SIZE:
+    {
+        int width = LOWORD(lparam);  // Macro to get the low-order word.
+        int height = HIWORD(lparam); // Macro to get the high-order word.
+
+        // Respond to the message:
+        OnSize(hwnd, (UINT)wparam, width, height);
+    }
+    break;
+    case WM_PAINT: //https://learn.microsoft.com/en-us/windows/win32/learnwin32/painting-the-window
+    {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hwnd, &ps);
+
+        FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+        EndPaint(hwnd, &ps);
+    }
+    break;
     case WM_CHAR:
         if (wparam == VK_ESCAPE) {
             DestroyWindow(hwnd);
         }
+        /*/if (MessageBox(hwnd, L"Really quit?", L"My application", MB_OKCANCEL) == IDOK)
+        {
+            DestroyWindow(hwnd);
+        }*/
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
