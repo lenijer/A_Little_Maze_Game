@@ -38,7 +38,28 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hwnd, &ps);
 
-        FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+        //FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+
+        //FillRect(hdc, &ps.rcPaint, (HBRUSH)GetStockObject(BLACK_BRUSH));
+
+        /*/RECT A;
+        A.left = 0;
+        A.top = 0;
+        A.right = 100;
+        A.bottom = 100;
+
+        FillRect(hdc, &A, (HBRUSH)GetStockObject(BLACK_BRUSH));*/
+
+        RECT A;
+        A.left = 0;
+        A.top = 0;
+        A.right = 100;
+        A.bottom = 100;
+
+        COLORREF AColor = 0x000000FF;
+
+        FillRect(hdc, &A, (HBRUSH)CreateSolidBrush(AColor));
+
         EndPaint(hwnd, &ps);
     }
     break;
