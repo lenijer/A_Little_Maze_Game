@@ -9,9 +9,11 @@
 */
 #include "Window.h"
 
-Window::Window(int sizeX, int sizeY) {
+Window::Window(int sizeX, int sizeY, int SpawnLocX, int SpawnLocY) {
 	Xsize = sizeX;
 	Ysize = sizeY;
+    ScreenLocX = SpawnLocX;
+    ScreenLocY = SpawnLocY;
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
@@ -38,11 +40,13 @@ bool Window::RunWindow() {
     windowClass.lpfnWndProc = WndProc;
     windowClass.lpszClassName = L"Window in Console"; //"Window in Console"
     windowClass.style = CS_HREDRAW | CS_VREDRAW;
+
     if (!RegisterClass(&windowClass)) {
         MessageBox(NULL, L"Could not register class", L"Error", MB_OK);
     }
-    HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_POPUP, 0, 0, Xsize, Ysize, NULL, NULL, NULL, NULL);
+    HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_POPUP, ScreenLocX, ScreenLocY, Xsize, Ysize, NULL, NULL, NULL, NULL);
     ShowWindow(windowHandle, SW_RESTORE);
+
     MSG messages;
     while (GetMessage(&messages, NULL, 0, 0) > 0) {
         TranslateMessage(&messages);
@@ -50,5 +54,4 @@ bool Window::RunWindow() {
     }
     DeleteObject(windowHandle);
     return messages.wParam;
-    FreeConsole();
 }

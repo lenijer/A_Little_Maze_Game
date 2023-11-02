@@ -14,12 +14,14 @@ class Window
 {
 public:
 	Window() {};
-	Window(int sizeX, int sizeY);
+	Window(int sizeX, int sizeY, int SpawnLocX = 0, int SpawnLocY = 0);
 	~Window() {};
 
 	bool RunWindow();
 private:
 	int Xsize;
 	int Ysize;
+	int ScreenLocX;
+	int ScreenLocY;
 };
 

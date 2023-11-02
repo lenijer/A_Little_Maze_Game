@@ -49,7 +49,13 @@ void RunMaze();
 
 int main()
 {
-    Window* window = new Window(1400, 700);
+    FreeConsole();
+    /*
+    GetSystemMetrics(SM_CXSCREEN), //width of window; this function
+    //retrieves the screen resolution.
+    GetSystemMetrics(SM_CYSCREEN), //height of the window
+    */
+    Window* window = new Window(1400, 700, GetSystemMetrics(SM_CXSCREEN)/8, GetSystemMetrics(SM_CYSCREEN)/8);
     window->RunWindow();
     delete window;
 }
