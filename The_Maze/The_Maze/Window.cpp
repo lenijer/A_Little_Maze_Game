@@ -8,6 +8,7 @@
 *			turtorial written(by, when): Troaat, 18/07-2017
 */
 #include "Window.h"
+#include "VisualWindow.h"
 
 Window::Window(int sizeX, int sizeY, int SpawnLocX, int SpawnLocY) {
 	Xsize = sizeX;
@@ -38,27 +39,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hwnd, &ps);
 
-        //FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+        Pixel P(100, 100, 50, 50, new Color(0, 0, 255));
 
-        //FillRect(hdc, &ps.rcPaint, (HBRUSH)GetStockObject(BLACK_BRUSH));
+        RECT A = P.GetPixel();
 
-        /*/RECT A;
-        A.left = 0;
-        A.top = 0;
-        A.right = 100;
-        A.bottom = 100;
-
-        FillRect(hdc, &A, (HBRUSH)GetStockObject(BLACK_BRUSH));*/
-
-        RECT A;
-        A.left = 0;
-        A.top = 0;
-        A.right = 100;
-        A.bottom = 100;
-
-        COLORREF AColor = 0x000000FF;
-
-        FillRect(hdc, &A, (HBRUSH)CreateSolidBrush(AColor));
+        FillRect(hdc, &A, (HBRUSH)CreateSolidBrush(P.PixelColor->HexColor()));
 
         EndPaint(hwnd, &ps);
     }
@@ -82,7 +67,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
 
 bool Window::RunWindow() {
     WNDCLASS windowClass = { 0 };
-    windowClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+    windowClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
     windowClass.hInstance = NULL;
     windowClass.lpfnWndProc = WndProc;

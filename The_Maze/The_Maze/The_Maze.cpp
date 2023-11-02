@@ -26,7 +26,7 @@ void Floor1(std::string Map[x][y]);
 
 int main()
 {
-    menu();
+    //menu();
     FreeConsole();
     /*
     GetSystemMetrics(SM_CXSCREEN), //width of window; this function
