@@ -8,6 +8,14 @@
 #include <string>
 #include <vector>
 #include <conio.h>
+#include <Windows.h>
+
+#include "olcConsoleGameEngine.h"
+
+class Demo : public olcConsoleGameEngine {//turtorial used: https://www.youtube.com/watch?v=cWc0hgYwZyc&list=LL&index=1
+public:
+    Demo() {};
+};
 
 std::vector<std::string> Menu_Options = {
     "Play Game",
@@ -48,7 +56,10 @@ void RunMaze();
 
 int main()
 {
-    menu();
+    Demo game;
+    game.ConstructConsole(15, 20, 8, 8);
+    game.Start();
+    //menu();
 }
 
 void menu() {
