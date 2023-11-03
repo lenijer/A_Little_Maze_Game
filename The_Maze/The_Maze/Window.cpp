@@ -8,7 +8,7 @@
 *			turtorial written(by, when): Troaat, 18/07-2017
 */
 #include "Window.h"
-#include "VisualWindow.h"
+#include "Input.h"
 
 Window::Window(int sizeX, int sizeY, int SpawnLocX, int SpawnLocY) {
 	Xsize = sizeX;
@@ -45,17 +45,27 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
 
         FillRect(hdc, &A, (HBRUSH)CreateSolidBrush(P.PixelColor->HexColor()));
 
+        Pixel K(100, 100, 300, 300, new Color(0, 255, 0));
+
+        RECT L = K.GetPixel();
+
+        FillRect(hdc, &L, (HBRUSH)CreateSolidBrush(K.PixelColor->HexColor()));
+
         EndPaint(hwnd, &ps);
     }
     break;
     case WM_CHAR:
-        if (wparam == VK_ESCAPE) {
+        if (wparam == 0x1B) {
             DestroyWindow(hwnd);
         }
-        /*/if (MessageBox(hwnd, L"Really quit?", L"My application", MB_OKCANCEL) == IDOK)
+        if (wparam == 0x41/*A key https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes*/) {
+            //Input.A = true;
+        }
+        /**if (MessageBox(hwnd, L"Really quit?", L"My application", MB_OKCANCEL) == IDOK)
         {
             DestroyWindow(hwnd);
         }*/
+    break;
     case WM_DESTROY:
         PostQuitMessage(0);
         break;

@@ -9,6 +9,8 @@
 */
 #pragma once
 #include <Windows.h>
+#include "Player.h"
+#include "VisualWindow.h"
 
 class Window
 {
@@ -23,5 +25,7 @@ private:
 	int Ysize;
 	int ScreenLocX;
 	int ScreenLocY;
+	Player* PL;
+	VisualWindow* GameWindow;
 };
 

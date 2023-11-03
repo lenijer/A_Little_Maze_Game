@@ -6,11 +6,23 @@
 *       Project Name: The Maze
 */
 #include "Pixel.h"
+#include <vector>
+#include "Player.h"
+
 class VisualWindow
 {
 public:
 	VisualWindow() {};
+	VisualWindow(int MaxSceenSizeX, int MaxScreenSizeY);
 	~VisualWindow() {};
+
+	void Draw(HWND hwnd);
+
+	Player* PL;
+private:
+	int MaxX;
+	int MaxY;
+	std::vector<Pixel*> Screen;
 
 };
 

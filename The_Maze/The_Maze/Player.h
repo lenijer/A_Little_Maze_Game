@@ -9,6 +9,13 @@
 
 class Player : public InterractableObject
 {
+public: 
+	Player() {};
+	Player(int PosX, int PosY);
+	Player(int PosX, int PosY, Pixel Pixel);
+	~Player() {};
 
+	void Move(int ChangeInPosX, int ChangeInPosY);
+private:
 };
 

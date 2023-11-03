@@ -5,6 +5,8 @@
 *           Completed:
 *       Project Name: The Maze
 */
+#include "Pixel.h"
+
 class Object
 {
 public:
@@ -20,10 +22,11 @@ public:
 	void SetY(int y);
 	void SetCharacter(char Character);
 	
-private:
+protected:
 	int x; //xpos
 	int y; //ypos
 
+	Pixel P;
 	char c; //character representation
 };
 

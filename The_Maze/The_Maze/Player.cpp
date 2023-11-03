@@ -5,3 +5,22 @@
 *       Project Name: The Maze
 */
 #include "Player.h"
+
+Player::Player(int PosX, int PosY)
+{
+	x = PosX;
+	y = PosY;
+}
+
+Player::Player(int PosX, int PosY, Pixel Pixel)
+{
+	x = PosX;
+	y = PosY;
+	P = Pixel;
+}
+
+void Player::Move(int ChangeInPosX, int ChangeInPosY)
+{
+	x += ChangeInPosX;
+	y += ChangeInPosY;
+}
