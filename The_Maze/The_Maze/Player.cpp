@@ -23,4 +23,5 @@ void Player::Move(int ChangeInPosX, int ChangeInPosY)
 {
 	x += ChangeInPosX;
 	y += ChangeInPosY;
+	P.AdjustPixel(x * 10 + 5, y * 10 + 5);
 }

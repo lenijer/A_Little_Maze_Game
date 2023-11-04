@@ -12,12 +12,14 @@ class Pixel
 {
 public:
 	Pixel() {};
-	Pixel(int SizeX, int SizeY, int LocX, int LocY, Color* Color);
+	Pixel(int SizeX, int SizeY, int LocX, int LocY, Color Color);
 	~Pixel() {};
 
 	RECT GetPixel();
 
-	Color* PixelColor;
+	void AdjustPixel(int LocX, int LocY);
+
+	Color PixelColor;
 private:
 	int LocX;
 	int LocY;

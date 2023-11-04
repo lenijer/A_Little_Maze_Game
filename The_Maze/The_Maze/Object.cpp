@@ -23,3 +23,13 @@ void Object::SetY(int ny) {
 void Object::SetCharacter(char Character) {
 	c = Character;
 }
+
+void Object::SetPixel(Pixel P_Pixel)
+{
+	P = P_Pixel;
+}
+
+void Object::SetName(std::string name)
+{
+	Name = name;
+}

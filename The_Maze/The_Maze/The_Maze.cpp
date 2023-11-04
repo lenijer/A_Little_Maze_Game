@@ -33,7 +33,7 @@ int main()
     //retrieves the screen resolution.
     GetSystemMetrics(SM_CYSCREEN), //height of the window
     */
-    Window* window = new Window(1400, 700, GetSystemMetrics(SM_CXSCREEN)/8, GetSystemMetrics(SM_CYSCREEN)/8);
+    Window* window = new Window(200, 200, GetSystemMetrics(SM_CXSCREEN)/2, GetSystemMetrics(SM_CYSCREEN)/2);
     window->RunWindow();
     delete window;
 }
