@@ -4,15 +4,10 @@
 *           Completed: 
 *       Project Name: The Maze
 */
-#include <iostream>
-#include <string>
-#include <vector>
-#include <conio.h>
 #include "Window.h"
 
 int main()
 {
-    //menu();
     FreeConsole();
     /*
     GetSystemMetrics(SM_CXSCREEN), //width of window; this function
