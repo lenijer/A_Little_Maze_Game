@@ -12,7 +12,7 @@
 #include <vector>
 #include <string>
 #include "Player.h"
-#include "VisualWindow.h"
+//#include "VisualWindow.h"
 
 class Window
 {

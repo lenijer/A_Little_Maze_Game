@@ -7,7 +7,7 @@
 */
 #include "Window.h"
 
-VisualWindow* GameWindow;
+//VisualWindow* GameWindow;
 Player* PL;
 bool change{ true };
 std::vector<Object> Objects;
@@ -64,7 +64,7 @@ Window::Window(int sizeX, int sizeY, int SpawnLocX, int SpawnLocY) {
         }
     }
 
-    GameWindow = new VisualWindow(Xsize, Ysize, Objects, PL);
+    //GameWindow = new VisualWindow(Xsize, Ysize, Objects, PL);
 }
 
 Window::~Window()
@@ -92,79 +92,50 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
     case WM_KEYDOWN:
         if (!change) {
             if (wparam == VK_DOWN) {
-                PL->Move(0, 1);
-                change = true;
+                //PL->Move(0, 1);
+                //change = true;
                 //wparam = WM_PAINT;
             }
             if (wparam == VK_UP) {
-                PL->Move(0, -1);
-                change = true;
+                //PL->Move(0, -1);
+                //change = true;
             }
             if (wparam == VK_LEFT) {
-                PL->Move(-1, 0);
-                change = true;
+                //PL->Move(-1, 0);
+                //change = true;
 
             }
             if (wparam == VK_RIGHT) {
+                //PL->Move(1, 0);
+                //change = true;
+            }
+            if (wparam == 0x41/*A key https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes*/) {
+                PL->Move(-1, 0);
+                change = true;
+                //Input.A = true;
+            }
+            if (wparam == 0x44/*D key*/) {
                 PL->Move(1, 0);
+                change = true;
+            }
+            if (wparam == 0x53/*S key*/) {
+                PL->Move(0, 1);
+                change = true;
+            }
+            if (wparam == 0x57/*W key*/) {
+                PL->Move(0, -1);
                 change = true;
             }
         }
         break;
     case WM_PAINT: //https://learn.microsoft.com/en-us/windows/win32/learnwin32/painting-the-window
     {
-        //GameWindow->Draw(hwnd);
 
-        /*/PAINTSTRUCT ps;
-        //HDC hdc = 
-        BeginPaint(hwnd, &ps);
-
-        RECT A;
-
-        for (int i = 0; i < Objects.size(); i++) {
-            if (PL->GetX() == Objects[i].GetX() && PL->GetY() == Objects[i].GetY()) {
-                Pixel Pix = PL->ReturnPixel();
-                A = Pix.GetPixel();
-                FillRect(ps.hdc, &A, (HBRUSH)CreateSolidBrush(Pix.PixelColor.HexColor()));
-            }
-            else {
-                Pixel Pix = Objects[i].ReturnPixel();
-                A = Pix.GetPixel();
-                FillRect(ps.hdc, &A, (HBRUSH)CreateSolidBrush(Pix.PixelColor.HexColor()));
-            }
-            /*RECT A = O[i]->ReturnPixel().GetPixel();
-            FillRect(hdc, &A, (HBRUSH)CreateSolidBrush(O[i]->ReturnPixel().PixelColor.HexColor()));*/
-        /*}
-
-        EndPaint(hwnd, &ps);
-        change = false;*/
-        //delete hdc;
-        /*/
-        PAINTSTRUCT ps;
-        HDC hdc = BeginPaint(hwnd, &ps);
-
-        Pixel P(100, 100, 50, 50, new Color(0, 0, 255));
-
-        RECT A = P.GetPixel();
-
-        FillRect(hdc, &A, (HBRUSH)CreateSolidBrush(P.PixelColor->HexColor()));
-
-        /*Pixel K(100, 100, 300, 300, new Color(0, 255, 0));
-
-        RECT L = K.GetPixel();
-
-        FillRect(hdc, &L, (HBRUSH)CreateSolidBrush(K.PixelColor->HexColor()));/
-
-        EndPaint(hwnd, &ps);*/
     }
     break;
     case WM_CHAR:
         if (wparam == VK_ESCAPE) {
             DestroyWindow(hwnd);
-        }
-        if (wparam == 0x41/*A key https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes*/) {
-            //PL->Move(-1, 0);
-            //Input.A = true;
         }
         /**if (MessageBox(hwnd, L"Really quit?", L"My application", MB_OKCANCEL) == IDOK)
         {
@@ -228,7 +199,26 @@ bool Window::RunWindow() {
             //InvalidateRect(windowHandle, &Inv, true);
             HDC someHDC = GetDC(windowHandle);
 
-            GameWindow->Draw(windowHandle, someHDC);
+            PAINTSTRUCT ps;
+            //HDC hdc = 
+            BeginPaint(windowHandle, &ps);
+
+            for (int i = 0; i < Objects.size(); i++) {
+                if (PL->GetX() == Objects[i].GetX() && PL->GetY() == Objects[i].GetY()) {
+                    Pixel P = PL->ReturnPixel();
+                    RECT A = P.GetPixel();
+                    FillRect(someHDC, &A, (HBRUSH)CreateSolidBrush(P.PixelColor.HexColor()));
+                }
+                else {
+                    Pixel P = Objects[i].ReturnPixel();
+                    RECT A = P.GetPixel();
+                    FillRect(someHDC, &A, (HBRUSH)CreateSolidBrush(P.PixelColor.HexColor()));
+                }
+                /*/RECT A = O[i]->ReturnPixel().GetPixel();
+                FillRect(hdc, &A, (HBRUSH)CreateSolidBrush(O[i]->ReturnPixel().PixelColor.HexColor()));*/
+            }
+
+            EndPaint(windowHandle, &ps);
 
             ReleaseDC(windowHandle, someHDC);
             change = false;
