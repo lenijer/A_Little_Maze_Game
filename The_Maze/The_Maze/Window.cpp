@@ -6,13 +6,10 @@
 *           File: Window.cpp
 */
 #include "Window.h"
-#include "Input.h"
-#include "Holder.h"
 
 VisualWindow* GameWindow;
 Player* PL;
 bool change{ true };
-//Holder Hold;
 std::vector<Object> Objects;
 
 Window::Window(int sizeX, int sizeY, int SpawnLocX, int SpawnLocY) {
@@ -227,7 +224,7 @@ bool Window::RunWindow() {
         Inv.right = Xsize;*/
 
         //drawing whithout WM_PAINT: https://learn.microsoft.com/en-us/windows/win32/gdi/drawing-without-the-wm-paint-message
-        //if (change){
+        if (change){
             //InvalidateRect(windowHandle, &Inv, true);
             HDC someHDC = GetDC(windowHandle);
 
@@ -236,7 +233,7 @@ bool Window::RunWindow() {
             ReleaseDC(windowHandle, someHDC);
             change = false;
             //ValidateRect(windowHandle, &Inv);
-        //}/*
+        }/*
         
 
         //if (change) { //Works a bit then becomes whacky, might be memmory issue

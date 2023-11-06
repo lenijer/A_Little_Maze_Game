@@ -138,8 +138,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Color.h" />
-    <ClInclude Include="Holder.h" />
-    <ClInclude Include="Input.h" />
     <ClInclude Include="Pixel.h" />
     <ClInclude Include="VisualWindow.h" />
     <ClInclude Include="Window.h" />
