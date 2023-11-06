@@ -13,15 +13,14 @@ class VisualWindow
 {
 public:
 	VisualWindow() {};
-	VisualWindow(int MaxSceenSizeX, int MaxScreenSizeY, std::vector<Object*> Objects, Player* Player_p);
+	VisualWindow(int MaxSceenSizeX, int MaxScreenSizeY, std::vector<Object> Objects, Player* Player_p);
 	~VisualWindow() {};
 
-	void Draw(HWND hwnd);
+	void Draw(HWND hwnd, HDC window);
 private:
-	int MaxX;
-	int MaxY;
-	Player* PL;
-	std::vector<Object*> O;
-
+	int MaxX{ 0 };
+	int MaxY{ 0 };
+	Player* PL{ nullptr };
+	std::vector<Object> O;
 };
 

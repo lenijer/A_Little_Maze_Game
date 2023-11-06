@@ -13,17 +13,17 @@ class Pixel
 public:
 	Pixel() {};
 	Pixel(int SizeX, int SizeY, int LocX, int LocY, Color Color);
-	~Pixel() {};
+	~Pixel() {  };
 
-	RECT GetPixel();
+	const RECT GetPixel();
 
 	void AdjustPixel(int LocX, int LocY);
 
 	Color PixelColor;
 private:
-	int LocX;
-	int LocY;
-	int SizeX;
-	int SizeY;
+	int LocX{ 0 };
+	int LocY{ 0 };
+	int SizeX{ 0 };
+	int SizeY{ 0 };
 };
 

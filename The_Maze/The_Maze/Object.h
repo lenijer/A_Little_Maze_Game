@@ -14,25 +14,22 @@ public:
 	Object();
 	~Object();
 
-	int GetX() { return x; }
-	int GetY() { return y; }
+	const int GetX() { return x; }
+	const int GetY() { return y; }
 
-	char GetCharacter() { return c; }
-	Pixel ReturnPixel() { return P; }
-	std::string GetName() { return Name; }
+	const Pixel ReturnPixel() { return P; }
+	const std::string GetName() { return Name; }
 
 	void SetX(int x);
 	void SetY(int y);
-	void SetCharacter(char Character);
 	void SetPixel(Pixel P_Pixel);
 	void SetName(std::string name);
 	
 protected:
-	int x; //xpos
-	int y; //ypos
+	int x{ 0 }; //xpos
+	int y{ 0 }; //ypos
 
-	std::string Name;
+	std::string Name{ "" };
 	Pixel P;
-	char c; //character representation
 };
 

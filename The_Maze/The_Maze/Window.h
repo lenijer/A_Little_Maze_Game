@@ -19,16 +19,16 @@ class Window
 public:
 	Window() {};
 	Window(int sizeX, int sizeY, int SpawnLocX = 0, int SpawnLocY = 0);
-	~Window() {};
+	~Window();
 
 	bool RunWindow();
+
 private:
-	int Xsize;
-	int Ysize;
-	int ScreenLocX;
-	int ScreenLocY;
-	std::vector<Object*> Objects;
-	Player* PL;
+    int Xsize{ 0 };
+    int Ysize{ 0 };
+    int ScreenLocX{ 0 };
+    int ScreenLocY{ 0 };
+	//std::vector<Object*> Objects;
 	std::string Stage[20][20] = {
                     {"W","W","W","W","W","W","W","W","W","W","W","S","W","W","W","W","W","W","W","W"},
                     {"W"," ","W"," "," "," "," "," "," "," ","W"," ","W"," "," "," ","W"," "," ","W"},

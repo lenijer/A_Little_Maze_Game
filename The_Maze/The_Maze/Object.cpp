@@ -6,7 +6,9 @@
 */
 #include "Object.h"
 
-Object::Object() { }
+Object::Object() { 
+
+}
 
 Object::~Object() {
 
@@ -18,10 +20,6 @@ void Object::SetX(int ny) {
 
 void Object::SetY(int ny) {
 	y = ny;
-}
-
-void Object::SetCharacter(char Character) {
-	c = Character;
 }
 
 void Object::SetPixel(Pixel P_Pixel)

@@ -10,7 +10,7 @@ Pixel::Pixel(int SizeX, int SizeY, int LocX, int LocY, Color Color)
 	PixelColor = Color;
 }
 
-RECT Pixel::GetPixel()
+const RECT Pixel::GetPixel()
 {
 	RECT A;
 	A.left = LocX - SizeX / 2;
