@@ -6,8 +6,8 @@
 *           File: Window.cpp
 */
 #include "Window.h"
+#include <thread>
 
-//VisualWindow* GameWindow;
 Player* PL;
 bool change{ true };
 std::vector<Object> Objects;
@@ -63,8 +63,6 @@ Window::Window(int sizeX, int sizeY, int SpawnLocX, int SpawnLocY) {
             PL->SetPixel(Pixel(10, 10, Objects[i].GetX() * 10 + 5, Objects[i].GetY() * 10 + 5, Color(0, 0, 255)));
         }
     }
-
-    //GameWindow = new VisualWindow(Xsize, Ysize, Objects, PL);
 }
 
 Window::~Window()
@@ -151,6 +149,31 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
     return 0;
 }
 
+void Draw(HWND window) {
+    HDC someHDC = GetDC(window);
+
+    PAINTSTRUCT ps;
+    //HDC hdc = 
+    BeginPaint(window, &ps);
+
+    for (int i = 0; i < Objects.size(); i++) {
+        if (PL->GetX() == Objects[i].GetX() && PL->GetY() == Objects[i].GetY()) {
+            Pixel P = PL->ReturnPixel();
+            RECT A = P.GetPixel();
+            FillRect(someHDC, &A, (HBRUSH)CreateSolidBrush(P.PixelColor.HexColor()));
+        }
+        else {
+            Pixel P = Objects[i].ReturnPixel();
+            RECT A = P.GetPixel();
+            FillRect(someHDC, &A, (HBRUSH)CreateSolidBrush(P.PixelColor.HexColor()));
+        }
+    }
+
+    EndPaint(window, &ps);
+
+    ReleaseDC(window, someHDC);
+}
+
 bool Window::RunWindow() {
     WNDCLASS windowClass = { 0 };
     windowClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
@@ -166,17 +189,15 @@ bool Window::RunWindow() {
     HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_POPUP/*Don't Allow size change*/, ScreenLocX - (Xsize / 2), ScreenLocY - (Ysize / 2), Xsize, Ysize, NULL, NULL, NULL, NULL);
     ShowWindow(windowHandle, SW_RESTORE);
 
-    //RECT Inv;
-    //Inv.top = 0;
-    //Inv.bottom = Ysize;
-    //Inv.left = 0;
-    //Inv.right = Xsize;
-
     MSG messages;
     HWND hwndDlgModeless = NULL;
     HACCEL haccel = NULL;
 
-    while (GetMessage(&messages, NULL, 0, 0) > 0) {
+    //std::thread T_Draw(Draw, windowHandle);
+    Draw(windowHandle);
+
+    while (GetMessage(&messages, windowHandle, WM_KEYFIRST, WM_KEYLAST) > 0) {
+
         if (hwndDlgModeless == (HWND)NULL ||
             !IsDialogMessage(hwndDlgModeless, &messages) &&
             !TranslateAccelerator(windowHandle, haccel,
@@ -185,60 +206,15 @@ bool Window::RunWindow() {
             TranslateMessage(&messages);
             DispatchMessage(&messages);
         }
-        //TranslateMessage(&messages);
-        //DispatchMessage(&messages);
-
-        /*RECT Inv;
-        Inv.top = 0;
-        Inv.bottom = Ysize;
-        Inv.left = 0;
-        Inv.right = Xsize;*/
 
         //drawing whithout WM_PAINT: https://learn.microsoft.com/en-us/windows/win32/gdi/drawing-without-the-wm-paint-message
         if (change){
+            //T_Draw.join();
+            Draw(windowHandle);
             //InvalidateRect(windowHandle, &Inv, true);
-            HDC someHDC = GetDC(windowHandle);
-
-            PAINTSTRUCT ps;
-            //HDC hdc = 
-            BeginPaint(windowHandle, &ps);
-
-            for (int i = 0; i < Objects.size(); i++) {
-                if (PL->GetX() == Objects[i].GetX() && PL->GetY() == Objects[i].GetY()) {
-                    Pixel P = PL->ReturnPixel();
-                    RECT A = P.GetPixel();
-                    FillRect(someHDC, &A, (HBRUSH)CreateSolidBrush(P.PixelColor.HexColor()));
-                }
-                else {
-                    Pixel P = Objects[i].ReturnPixel();
-                    RECT A = P.GetPixel();
-                    FillRect(someHDC, &A, (HBRUSH)CreateSolidBrush(P.PixelColor.HexColor()));
-                }
-                /*/RECT A = O[i]->ReturnPixel().GetPixel();
-                FillRect(hdc, &A, (HBRUSH)CreateSolidBrush(O[i]->ReturnPixel().PixelColor.HexColor()));*/
-            }
-
-            EndPaint(windowHandle, &ps);
-
-            ReleaseDC(windowHandle, someHDC);
             change = false;
             //ValidateRect(windowHandle, &Inv);
-        }/*
-        
-
-        //if (change) { //Works a bit then becomes whacky, might be memmory issue
-            //InvalidateRgn(windowHandle, NULL, true);
-            //InvalidateRect(windowHandle, &Inv, true);
-            //UpdateWindow(windowHandle);
-        //}
-        /*InvalidateRect(windowHandle, &Inv, true);
-        UpdateWindow(windowHandle);*/
-        /*if (change) { //Works a bit then becomes whacky (roughfly 13 button presses)
-            DeleteObject(windowHandle);//neutral
-            HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_POPUP/*WS_OVERLAPPEDWINDOW/*Allow size change *//*, ScreenLocX - (Xsize / 2), ScreenLocY - (Ysize / 2), Xsize, Ysize, NULL, NULL, NULL, NULL);
-            ShowWindow(windowHandle, SW_RESTORE);
-            change = false;
-        }*/
+        }
     }
     DeleteObject(windowHandle);
     return messages.wParam;

@@ -23,7 +23,6 @@ void Player::Move(int ChangeInPosX, int ChangeInPosY)
 {
 	x += ChangeInPosX;
 	y += ChangeInPosY;
-	//delete P;
-	//P = new Pixel(10, 10, x * 10 + 5, y * 10 + 5, new Color(0, 0, 255));
+
 	P.AdjustPixel(x * 10 + 5, y * 10 + 5);
 }

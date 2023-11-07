@@ -16,6 +16,5 @@ public:
 	~Player() {};
 
 	void Move(int ChangeInPosX, int ChangeInPosY);
-private:
 };
 

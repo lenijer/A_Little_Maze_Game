@@ -11,4 +11,3 @@ class InterractableObject : public Object
 {
 
 };
-

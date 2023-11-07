@@ -133,13 +133,11 @@
     <ClCompile Include="Pixel.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="The_Maze.cpp" />
-    <ClCompile Include="VisualWindow.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Color.h" />
     <ClInclude Include="Pixel.h" />
-    <ClInclude Include="VisualWindow.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>

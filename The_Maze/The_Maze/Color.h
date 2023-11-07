@@ -2,7 +2,7 @@
 /*
 *       Made by: Lenita Njærheim
 *           Created On: 02/11-2023
-*           Completed:
+*           Completed: 06/11-2023
 *       Project Name: The Maze
 */
 #include <Windows.h>
