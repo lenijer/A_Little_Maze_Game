@@ -11,6 +11,7 @@
 Player* PL;
 bool change{ true };
 std::vector<Object> Objects;
+bool Run{ true };
 
 Window::Window(int sizeX, int sizeY, int SpawnLocX, int SpawnLocY) {
 	Xsize = sizeX;
@@ -134,6 +135,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
     case WM_CHAR:
         if (wparam == VK_ESCAPE) {
             DestroyWindow(hwnd);
+            Run = false;
         }
         /**if (MessageBox(hwnd, L"Really quit?", L"My application", MB_OKCANCEL) == IDOK)
         {
@@ -190,13 +192,16 @@ bool Window::RunWindow() {
     ShowWindow(windowHandle, SW_RESTORE);
 
     MSG messages;
+    //MSG KeybordInput;
     HWND hwndDlgModeless = NULL;
     HACCEL haccel = NULL;
 
-    //std::thread T_Draw(Draw, windowHandle);
+    //std::thread T(GetMessage, &KeybordInput, windowHandle, WM_KEYFIRST, WM_KEYLAST);
     Draw(windowHandle);
 
-    while (GetMessage(&messages, windowHandle, WM_KEYFIRST, WM_KEYLAST) > 0) {
+    while (Run) {
+        //T.join();
+        GetMessage(&messages, NULL, 0, 0);
 
         if (hwndDlgModeless == (HWND)NULL ||
             !IsDialogMessage(hwndDlgModeless, &messages) &&
