@@ -91,11 +91,12 @@ void RunMaze() {
     Pl->SetX(0);
     Pl->SetY(11);
 
+    Floor1(Map);//better for memmory
+
     while (true) {
         system("cls");
 
-        Floor1(Map);
-        Map[Pl->GetX()][Pl->GetY()] = Pl->GetCharacter();
+        Map[Pl->GetX()][Pl->GetY()] = Pl->GetCharacter();//this leaves a trail though
 
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
@@ -190,6 +191,9 @@ void Floor1(std::string Map[x][y]) {
             ny->SetY(j);
         }
     }
+    ny = new Object();
+
+    delete ny;
 
     for (int i = 0; i < Items.size(); i++) {
         Map[Items[i]->GetX()][Items[i]->GetY()] = Items[i]->GetCharacter();
