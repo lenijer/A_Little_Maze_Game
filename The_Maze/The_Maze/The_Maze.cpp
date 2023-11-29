@@ -9,6 +9,8 @@
 
 #include "colour.h"
 
+//int clearcounter{ 0 };
+
 const int x = 20;
 const int y = 20;
 std::string Floor[x][y] = {
@@ -36,11 +38,11 @@ std::string Floor[x][y] = {
 int P_x = 11; //player x
 int P_y = 0; //player y
 
-colour Wall = colour(255, 0, 0);
-colour Start = colour(255, 200, 0);
-colour End = colour(0, 255, 0);
-colour Path = colour(255, 255, 255);
-colour Player = colour(0, 0, 255);
+//colour Wall = colour(255, 0, 0);
+//colour Start = colour(255, 200, 0);
+//colour End = colour(0, 255, 0);
+//colour Path = colour(255, 255, 255);
+//colour Player = colour(0, 0, 255);
 
 HDC someHDC;
 
@@ -61,7 +63,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
         if (wparam == 0x57/*W key*/) {
             P_y--;
         }
-        SendMessage(hwnd, WM_PAINT, wparam, lparam);
+        //clearcounter++;
+        //SendMessage(hwnd, WM_PAINT, wparam, lparam);
+        return 0L;
+        break;
+    case  WM_ERASEBKGND:
+        //InvalidateRect()
         return 0L;
         break;
     case WM_PAINT:
@@ -80,20 +87,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
                 R->top = ly;
 
                 if (P_x == lx / 10 && P_y == ly / 10) {
-                    FillRect(someHDC, R, (HBRUSH)CreateSolidBrush(Player.HexColour()));
+                    //FillRect(someHDC, R, (HBRUSH)CreateSolidBrush(Player.HexColour()));
+                    FillRect(someHDC, R, (HBRUSH)GetStockObject(GRAY_BRUSH));
                 }
                 else {
                     if (Floor[ly / 10][lx / 10] == "W") {
-                        FillRect(someHDC, R, (HBRUSH)CreateSolidBrush(Wall.HexColour()));
+                        //FillRect(someHDC, R, (HBRUSH)CreateSolidBrush(Wall.HexColour()));
+                        FillRect(someHDC, R, (HBRUSH)GetStockObject(BLACK_BRUSH));
                     }
                     if (Floor[ly / 10][lx / 10] == "E") {
-                        FillRect(someHDC, R, (HBRUSH)CreateSolidBrush(End.HexColour()));
+                        //FillRect(someHDC, R, (HBRUSH)CreateSolidBrush(End.HexColour()));
+                        FillRect(someHDC, R, (HBRUSH)GetStockObject(LTGRAY_BRUSH));
                     }
                     if (Floor[ly / 10][lx / 10] == "S") {
-                        FillRect(someHDC, R, (HBRUSH)CreateSolidBrush(Start.HexColour()));
+                        //FillRect(someHDC, R, (HBRUSH)CreateSolidBrush(Start.HexColour()));
+                        FillRect(someHDC, R, (HBRUSH)GetStockObject(LTGRAY_BRUSH));
                     }
                     if (Floor[ly / 10][lx / 10] == " ") {
-                        FillRect(someHDC, R, (HBRUSH)CreateSolidBrush(Path.HexColour()));
+                        FillRect(someHDC, R, (HBRUSH)GetStockObject(WHITE_BRUSH));
                     }
                 }
             }
@@ -137,18 +148,23 @@ int main()
 
     someHDC = GetDC(windowHandle);
 
-    MSG* messages = new MSG();
+    MSG messages;
 
-    while (GetMessage(messages, NULL, 0, 0) > 0) {
+    while (GetMessage(&messages, NULL, 0, 0) > 0) {
 
-        TranslateMessage(messages);
-        DispatchMessage(messages);
+        TranslateMessage(&messages);
+        DispatchMessage(&messages);
 
-        //free(messages);
+        /*if (clearcounter > 20) {
+            free(&messages);
+            clearcounter = 0;
+            UpdateWindow(windowHandle);
+        }*/
+        RedrawWindow(windowHandle, NULL, NULL, RDW_INVALIDATE);
 
     }
 
     ReleaseDC(windowHandle, someHDC);
     DeleteObject(windowHandle);
-    return messages->wParam;
+    return messages.wParam;
 }
