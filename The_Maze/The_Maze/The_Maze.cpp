@@ -7,10 +7,6 @@
 #include <string>
 #include <Windows.h>
 
-#include "colour.h"
-
-//int clearcounter{ 0 };
-
 const int x = 20;
 const int y = 20;
 std::string Floor[x][y] = {
@@ -38,12 +34,6 @@ std::string Floor[x][y] = {
 int P_x = 11; //player x
 int P_y = 0; //player y
 
-//colour Wall = colour(255, 0, 0);
-//colour Start = colour(255, 200, 0);
-//colour End = colour(0, 255, 0);
-//colour Path = colour(255, 255, 255);
-//colour Player = colour(0, 0, 255);
-
 HDC someHDC;
 
 
@@ -63,12 +53,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
         if (wparam == 0x57/*W key*/) {
             P_y--;
         }
-        //clearcounter++;
         //SendMessage(hwnd, WM_PAINT, wparam, lparam);
         return 0L;
         break;
     case  WM_ERASEBKGND:
-        //InvalidateRect()
         return 0L;
         break;
     case WM_PAINT:
@@ -155,13 +143,7 @@ int main()
         TranslateMessage(&messages);
         DispatchMessage(&messages);
 
-        /*if (clearcounter > 20) {
-            free(&messages);
-            clearcounter = 0;
-            UpdateWindow(windowHandle);
-        }*/
         RedrawWindow(windowHandle, NULL, NULL, RDW_INVALIDATE);
-
     }
 
     ReleaseDC(windowHandle, someHDC);
