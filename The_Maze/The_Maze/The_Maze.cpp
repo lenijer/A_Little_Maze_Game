@@ -31,8 +31,8 @@ std::string Floor[x][y] = {
                     {"W"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ","W"},
                     {"W","E","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"}};
 
-int P_x = 11; //player x
-int P_y = 0; //player y
+int P_x = 0; //player x
+int P_y = 11; //player y
 
 HDC someHDC;
 
@@ -42,16 +42,28 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
     {
     case WM_KEYDOWN:
         if (wparam == 0x41/*A key https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes */) {
-            P_x--;
+            if (Floor[P_x][P_y - 1] != "W")
+            {
+                P_y--;
+            }
         }
         if (wparam == 0x44/*D key*/) {
-            P_x++;
+            if (Floor[P_x][P_y + 1] != "W")
+            {
+                P_y++;
+            }
         }
         if (wparam == 0x53/*S key*/) {
-            P_y++;
+            if (Floor[P_x + 1][P_y] != "W")
+            {
+                P_x++;
+            }
         }
         if (wparam == 0x57/*W key*/) {
-            P_y--;
+            if (Floor[P_x - 1][P_y] != "W")
+            {
+                P_x--;
+            }
         }
         //SendMessage(hwnd, WM_PAINT, wparam, lparam);
         return 0L;
@@ -74,7 +86,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
                 R->bottom = ly + 10;
                 R->top = ly;
 
-                if (P_x == lx / 10 && P_y == ly / 10) {
+                if (P_y == lx / 10 && P_x == ly / 10) {
                     //FillRect(someHDC, R, (HBRUSH)CreateSolidBrush(Player.HexColour()));
                     FillRect(someHDC, R, (HBRUSH)GetStockObject(GRAY_BRUSH));
                 }
@@ -144,6 +156,10 @@ int main()
         DispatchMessage(&messages);
 
         RedrawWindow(windowHandle, NULL, NULL, RDW_INVALIDATE);
+
+        if (Floor[P_x][P_y] == "E") {
+            DestroyWindow(windowHandle);
+        }
     }
 
     ReleaseDC(windowHandle, someHDC);
