@@ -4,8 +4,12 @@
 *           Completed: 
 *       Project Name: The Maze
 */
+//Basic includes
 #include <string>
 #include <Windows.h>
+
+//Homemade classes
+#include "Basic/colour.h"
 
 const int x = 20;
 const int y = 20;
@@ -35,7 +39,9 @@ int P_x = 0; //player x
 int P_y = 11; //player y
 
 HDC someHDC;
-
+HBRUSH Player_brush;
+HBRUSH Start_brush;
+HBRUSH Goal_brush;
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
     switch (message)
@@ -87,8 +93,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
                 R->top = ly;
 
                 if (P_y == lx / 10 && P_x == ly / 10) {
-                    //FillRect(someHDC, R, (HBRUSH)CreateSolidBrush(Player.HexColour()));
-                    FillRect(someHDC, R, (HBRUSH)GetStockObject(GRAY_BRUSH));
+                    FillRect(someHDC, R, Player_brush);
                 }
                 else {
                     if (Floor[ly / 10][lx / 10] == "W") {
@@ -96,12 +101,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
                         FillRect(someHDC, R, (HBRUSH)GetStockObject(BLACK_BRUSH));
                     }
                     if (Floor[ly / 10][lx / 10] == "E") {
-                        //FillRect(someHDC, R, (HBRUSH)CreateSolidBrush(End.HexColour()));
-                        FillRect(someHDC, R, (HBRUSH)GetStockObject(LTGRAY_BRUSH));
+                        FillRect(someHDC, R, Goal_brush);
                     }
                     if (Floor[ly / 10][lx / 10] == "S") {
-                        //FillRect(someHDC, R, (HBRUSH)CreateSolidBrush(Start.HexColour()));
-                        FillRect(someHDC, R, (HBRUSH)GetStockObject(LTGRAY_BRUSH));
+                        FillRect(someHDC, R, Start_brush);
                     }
                     if (Floor[ly / 10][lx / 10] == " ") {
                         FillRect(someHDC, R, (HBRUSH)GetStockObject(WHITE_BRUSH));
@@ -149,6 +152,13 @@ int main()
     someHDC = GetDC(windowHandle);
 
     MSG messages;
+
+    colour Player_colour = colour(0, 0, 255);
+    Player_brush = (HBRUSH)CreateSolidBrush(Player_colour.colorref());
+    colour Start_colour = colour(255, 200, 0);
+    Start_brush = (HBRUSH)CreateSolidBrush(Start_colour.colorref());
+    colour Goal_colour = colour(0, 255, 0);
+    Goal_brush = (HBRUSH)CreateSolidBrush(Goal_colour.colorref());
 
     while (GetMessage(&messages, NULL, 0, 0) > 0) {
 

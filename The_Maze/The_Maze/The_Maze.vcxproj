@@ -129,7 +129,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Basic\colour.cpp" />
     <ClCompile Include="The_Maze.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Basic\colour.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
