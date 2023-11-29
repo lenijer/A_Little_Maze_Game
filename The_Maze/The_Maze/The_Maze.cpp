@@ -8,7 +8,7 @@
 #include <string>
 #include <Windows.h>
 
-//Homemade classes
+//Selfmade classes
 #include "Basic/colour.h"
 
 const int x = 20;
@@ -127,6 +127,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
         return DefWindowProc(hwnd, message, wparam, lparam);
         break;
     }
+    return 0L;
 }
 
 int main()
@@ -145,8 +146,8 @@ int main()
         MessageBox(NULL, L"Could not register class", L"Error", MB_OK);
     }
 
-    HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_POPUP/*Don't Allow size change*//*, (GetSystemMetrics(SM_CXSCREEN) / 2) - (x * 10 / 2), (GetSystemMetrics(SM_CYSCREEN) / 2) - (y * 10 / 2), x * 10, y * 10, NULL, NULL, NULL, NULL);
-    //HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_OVERLAPPEDWINDOW/*allow size change*/, (GetSystemMetrics(SM_CXSCREEN) / 2) - (x * 10 / 2), (GetSystemMetrics(SM_CYSCREEN) / 2) - (y * 10 / 2), x * 10 + 100, y * 10 + 100, NULL, NULL, NULL, NULL);
+    HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_POPUP/*Don't Allow size change*/, (GetSystemMetrics(SM_CXSCREEN) / 2) - (x * 10 / 2), (GetSystemMetrics(SM_CYSCREEN) / 2) - (y * 10 / 2), x * 10, y * 10, NULL, NULL, NULL, NULL);
+    //HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_OVERLAPPEDWINDOW/*allow size change*//*, (GetSystemMetrics(SM_CXSCREEN) / 2) - (x * 10 / 2), (GetSystemMetrics(SM_CYSCREEN) / 2) - (y * 10 / 2), x * 10 + 100, y * 10 + 100, NULL, NULL, NULL, NULL);*/
     ShowWindow(windowHandle, SW_RESTORE);
 
     someHDC = GetDC(windowHandle);
