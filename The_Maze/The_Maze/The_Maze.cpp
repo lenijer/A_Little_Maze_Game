@@ -42,9 +42,6 @@ int P_x = 0; //player x
 int P_y = 11; //player y
 
 HDC someHDC;
-//HBRUSH Player_brush;
-//HBRUSH Start_brush;
-//HBRUSH Goal_brush;
 
 pixel Player_pixel;
 std::vector <pixel*> Objects;
@@ -140,8 +137,6 @@ int main()
 
     MSG messages;
 
-    /*colour Player_colour = colour(0, 0, 255);
-    Player_brush = (HBRUSH)CreateSolidBrush(Player_colour.colorref());*/
     Player_pixel = pixel(colour(0, 0, 255), P_y * pixelsize, P_x * pixelsize, pixelsize);
 
     pixel* ny = { nullptr };
@@ -163,11 +158,6 @@ int main()
     }
     ny = new pixel();
     delete ny;
-
-    /*colour Start_colour = colour(255, 200, 0);
-    Start_brush = (HBRUSH)CreateSolidBrush(Start_colour.colorref());*/
-    /*colour Goal_colour = colour(0, 255, 0);
-    Goal_brush = (HBRUSH)CreateSolidBrush(Goal_colour.colorref());*/
 
     while (GetMessage(&messages, NULL, 0, 0) > 0) {
 
