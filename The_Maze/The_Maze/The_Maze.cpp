@@ -7,10 +7,13 @@
 //Basic includes
 #include <string>
 #include <Windows.h>
+#include <vector>
 
 //Selfmade classes
 #include "Basic/colour.h"
+#include "Basic/pixel.h"
 
+const int pixelsize = 8;
 const int x = 20;
 const int y = 20;
 std::string Floor[x][y] = {
@@ -39,9 +42,12 @@ int P_x = 0; //player x
 int P_y = 11; //player y
 
 HDC someHDC;
-HBRUSH Player_brush;
-HBRUSH Start_brush;
-HBRUSH Goal_brush;
+//HBRUSH Player_brush;
+//HBRUSH Start_brush;
+//HBRUSH Goal_brush;
+
+pixel Player_pixel;
+std::vector <pixel*> Objects;
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
     switch (message)
@@ -71,6 +77,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
                 P_x--;
             }
         }
+        Player_pixel.move(P_y * pixelsize, P_x * pixelsize);
         //SendMessage(hwnd, WM_PAINT, wparam, lparam);
         return 0L;
         break;
@@ -83,33 +90,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
         BeginPaint(hwnd, &ps);
         
         //TextOut(hdc, 0, 0, "Hello, Windows!", 15);
-        RECT* R;
-        for (int lx = 0; lx < x * 10; lx += 10) {
-            for (int ly = 0; ly < y * 10; ly += 10) {
-                R = new RECT();
-                R->left = lx;
-                R->right = lx + 10;
-                R->bottom = ly + 10;
-                R->top = ly;
-
-                if (P_y == lx / 10 && P_x == ly / 10) {
-                    FillRect(someHDC, R, Player_brush);
-                }
-                else {
-                    if (Floor[ly / 10][lx / 10] == "W") {
-                        //FillRect(someHDC, R, (HBRUSH)CreateSolidBrush(Wall.HexColour()));
-                        FillRect(someHDC, R, (HBRUSH)GetStockObject(BLACK_BRUSH));
-                    }
-                    if (Floor[ly / 10][lx / 10] == "E") {
-                        FillRect(someHDC, R, Goal_brush);
-                    }
-                    if (Floor[ly / 10][lx / 10] == "S") {
-                        FillRect(someHDC, R, Start_brush);
-                    }
-                    if (Floor[ly / 10][lx / 10] == " ") {
-                        FillRect(someHDC, R, (HBRUSH)GetStockObject(WHITE_BRUSH));
-                    }
-                }
+        for (int i = 0; i < Objects.size(); i++) {
+            if (Player_pixel.get_x() == Objects[i]->get_x() && Player_pixel.get_y() == Objects[i]->get_y()) {
+                Player_pixel.drawpixel(someHDC);
+            }
+            else {
+                Objects[i]->drawpixel(someHDC);
             }
         }
         EndPaint(hwnd, &ps);
@@ -146,7 +132,7 @@ int main()
         MessageBox(NULL, L"Could not register class", L"Error", MB_OK);
     }
 
-    HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_POPUP/*Don't Allow size change*/, (GetSystemMetrics(SM_CXSCREEN) / 2) - (x * 10 / 2), (GetSystemMetrics(SM_CYSCREEN) / 2) - (y * 10 / 2), x * 10, y * 10, NULL, NULL, NULL, NULL);
+    HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_POPUP/*Don't Allow size change*/, (GetSystemMetrics(SM_CXSCREEN) / 2) - (x * pixelsize / 2), (GetSystemMetrics(SM_CYSCREEN) / 2) - (y * pixelsize / 2), x * pixelsize, y * pixelsize, NULL, NULL, NULL, NULL);
     //HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_OVERLAPPEDWINDOW/*allow size change*//*, (GetSystemMetrics(SM_CXSCREEN) / 2) - (x * 10 / 2), (GetSystemMetrics(SM_CYSCREEN) / 2) - (y * 10 / 2), x * 10 + 100, y * 10 + 100, NULL, NULL, NULL, NULL);*/
     ShowWindow(windowHandle, SW_RESTORE);
 
@@ -154,12 +140,34 @@ int main()
 
     MSG messages;
 
-    colour Player_colour = colour(0, 0, 255);
-    Player_brush = (HBRUSH)CreateSolidBrush(Player_colour.colorref());
-    colour Start_colour = colour(255, 200, 0);
-    Start_brush = (HBRUSH)CreateSolidBrush(Start_colour.colorref());
-    colour Goal_colour = colour(0, 255, 0);
-    Goal_brush = (HBRUSH)CreateSolidBrush(Goal_colour.colorref());
+    /*colour Player_colour = colour(0, 0, 255);
+    Player_brush = (HBRUSH)CreateSolidBrush(Player_colour.colorref());*/
+    Player_pixel = pixel(colour(0, 0, 255), P_y * pixelsize, P_x * pixelsize, pixelsize);
+
+    pixel* ny = { nullptr };
+    for (int lx = 0; lx < x * pixelsize; lx += pixelsize) {
+        for (int ly = 0; ly < y * pixelsize; ly += pixelsize) {
+            if (Floor[ly / pixelsize][lx / pixelsize] == "W") {
+                Objects.push_back(ny = new pixel(colour(0, 0, 0), lx, ly, pixelsize));
+            }
+            if (Floor[ly / pixelsize][lx / pixelsize] == "E") {
+                Objects.push_back(ny = new pixel(colour(0, 255, 0), lx, ly, pixelsize));
+            }
+            if (Floor[ly / pixelsize][lx / pixelsize] == "S") {
+                Objects.push_back(ny = new pixel(colour(255, 200, 0), lx, ly, pixelsize));
+            }
+            if (Floor[ly / pixelsize][lx / pixelsize] == " ") {
+                Objects.push_back(ny = new pixel(colour(255, 255, 255), lx, ly, pixelsize));
+            }
+        }
+    }
+    ny = new pixel();
+    delete ny;
+
+    /*colour Start_colour = colour(255, 200, 0);
+    Start_brush = (HBRUSH)CreateSolidBrush(Start_colour.colorref());*/
+    /*colour Goal_colour = colour(0, 255, 0);
+    Goal_brush = (HBRUSH)CreateSolidBrush(Goal_colour.colorref());*/
 
     while (GetMessage(&messages, NULL, 0, 0) > 0) {
 
