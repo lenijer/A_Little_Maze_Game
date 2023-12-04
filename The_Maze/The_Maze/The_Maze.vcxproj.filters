@@ -24,12 +24,18 @@
     <ClCompile Include="Basic\pixel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Basic\images.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Basic\colour.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Basic\pixel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Basic\images.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
