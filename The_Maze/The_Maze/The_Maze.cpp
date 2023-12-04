@@ -95,7 +95,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
         BeginPaint(hwnd, &ps);
         
         //TextOut(hdc, 0, 0, "Hello, Windows!", 15);
-        for (int i = 0; i < Objects.size(); i++) {
+        for (int i = 0; i < Objects.size(); i++ /*int i = Objects.size() - 1; i > 0; i--*/) {
             if (Player_image.get_x() == Objects[i]->get_x() && Player_image.get_y() == Objects[i]->get_y()) {
                 Player_image.draw(someHDC);
             }
@@ -151,13 +151,12 @@ int main()
     //Player_pixel = pixel(colour(0, 0, 255), P_y * pixelsize, P_x * pixelsize, pixelsize);
     Player_image = images(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2, colour(0, 0, 255), total_image_size, pixelsize);
 
-    int check;
     images* ny = { nullptr };
-    for (int lx = 0; lx < screen_x + total_image_size; lx += total_image_size) {
-        for (int ly = 0; ly < screen_y + total_image_size; ly += total_image_size) {
+    for (int lx = 0; lx < screen_x; lx += total_image_size) {
+        for (int ly = 0; ly < screen_y; ly += total_image_size) {
             if (Floor[(ly) / (total_image_size)][(lx) / (total_image_size)] == "W") {
                 //Objects.push_back(ny = new pixel(colour(0, 0, 0), lx, ly, pixelsize));
-                Objects.push_back(ny = new images(lx + total_image_size / 2, ly + total_image_size / 2, colour(255, 0, 0), total_image_size, pixelsize));
+                Objects.push_back(ny = new images(lx + total_image_size / 2, ly + total_image_size / 2, colour(0, 0, 0), total_image_size, pixelsize));
             }
             if (Floor[(ly) / (total_image_size)][(lx) / (total_image_size)] == "E") {
                 //Objects.push_back(ny = new pixel(colour(0, 255, 0), lx, ly, pixelsize));
@@ -169,14 +168,13 @@ int main()
             }
             if (Floor[(ly) / (total_image_size)][(lx) / (total_image_size)] == " ") {
                 //Objects.push_back(ny = new pixel(colour(255, 255, 255), lx, ly, pixelsize));
-                Objects.push_back(ny = new images(lx + total_image_size / 2, ly + total_image_size / 2, colour(0, 0, 0), total_image_size, pixelsize));
+                Objects.push_back(ny = new images(lx + total_image_size / 2, ly + total_image_size / 2, colour(255, 255, 255), total_image_size, pixelsize));
             }
-            check = ly;
         }
     }
     ny = new images();
     delete ny;
-    check;
+
     while (GetMessage(&messages, NULL, 0, 0) > 0) {
 
         TranslateMessage(&messages);

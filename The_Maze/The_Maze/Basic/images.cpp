@@ -8,7 +8,9 @@
 
 images::images(std::string filepath, int x, int y)
 {
-
+	loc[0] = x;
+	loc[1] = y;
+	size = 0;
 }
 
 images::images(int Location_x, int Location_y, colour unicolour, int image_size, int pixel_size)
