@@ -14,8 +14,7 @@
 #include "Basic/pixel.h"
 #include "Basic/images.h"
 
-const int pixelsize = 4;
-const int imagesize = 5;
+const int imagesize = 16; //fine on even numbers
 const int x = 20;
 const int y = 20;
 std::string Floor[x][y] = {
@@ -137,8 +136,8 @@ int main()
         MessageBox(NULL, L"Could not register class", L"Error", MB_OK);
     }
 
-    screen_x = imagesize * pixelsize * x;
-    screen_y = imagesize * pixelsize * y;
+    screen_x = imagesize * x;
+    screen_y = imagesize * y;
     HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_POPUP/*Don't Allow size change*/, (GetSystemMetrics(SM_CXSCREEN) / 2) - (screen_x / 2), (GetSystemMetrics(SM_CYSCREEN) / 2) - (screen_y / 2), screen_x, screen_y, NULL, NULL, NULL, NULL);
     //HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_OVERLAPPEDWINDOW/*allow size change*//*, (GetSystemMetrics(SM_CXSCREEN) / 2) - (x * 10 / 2), (GetSystemMetrics(SM_CYSCREEN) / 2) - (y * 10 / 2), x * 10 + 100, y * 10 + 100, NULL, NULL, NULL, NULL);*/
     ShowWindow(windowHandle, SW_RESTORE);
@@ -147,28 +146,28 @@ int main()
 
     MSG messages;
 
-    total_image_size = imagesize * pixelsize;
+    total_image_size = imagesize;
     //Player_pixel = pixel(colour(0, 0, 255), P_y * pixelsize, P_x * pixelsize, pixelsize);
-    Player_image = images(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2, colour(0, 0, 255), total_image_size, pixelsize);
+    Player_image = images(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2, colour(0, 0, 255), total_image_size);
 
     images* ny = { nullptr };
     for (int lx = 0; lx < screen_x; lx += total_image_size) {
         for (int ly = 0; ly < screen_y; ly += total_image_size) {
             if (Floor[(ly) / (total_image_size)][(lx) / (total_image_size)] == "W") {
                 //Objects.push_back(ny = new pixel(colour(0, 0, 0), lx, ly, pixelsize));
-                Objects.push_back(ny = new images(lx + total_image_size / 2, ly + total_image_size / 2, colour(0, 0, 0), total_image_size, pixelsize));
+                Objects.push_back(ny = new images(lx + total_image_size / 2, ly + total_image_size / 2, colour(0, 0, 0), total_image_size));
             }
             if (Floor[(ly) / (total_image_size)][(lx) / (total_image_size)] == "E") {
                 //Objects.push_back(ny = new pixel(colour(0, 255, 0), lx, ly, pixelsize));
-                Objects.push_back(ny = new images(lx + total_image_size / 2, ly + total_image_size / 2, colour(0, 255, 0), total_image_size, pixelsize));
+                Objects.push_back(ny = new images(lx + total_image_size / 2, ly + total_image_size / 2, colour(0, 255, 0), total_image_size));
             }
             if (Floor[(ly) / (total_image_size)][(lx) / (total_image_size)] == "S") {
                 //Objects.push_back(ny = new pixel(colour(255, 200, 0), lx, ly, pixelsize));
-                Objects.push_back(ny = new images(lx + total_image_size / 2, ly + total_image_size / 2, colour(255, 200, 0), total_image_size, pixelsize));
+                Objects.push_back(ny = new images(lx + total_image_size / 2, ly + total_image_size / 2, colour(255, 200, 0), total_image_size));
             }
             if (Floor[(ly) / (total_image_size)][(lx) / (total_image_size)] == " ") {
                 //Objects.push_back(ny = new pixel(colour(255, 255, 255), lx, ly, pixelsize));
-                Objects.push_back(ny = new images(lx + total_image_size / 2, ly + total_image_size / 2, colour(255, 255, 255), total_image_size, pixelsize));
+                Objects.push_back(ny = new images(lx + total_image_size / 2, ly + total_image_size / 2, colour(255, 255, 255), total_image_size));
             }
         }
     }

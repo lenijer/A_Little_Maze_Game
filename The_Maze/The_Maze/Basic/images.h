@@ -15,7 +15,7 @@ class images
 {
 public:
 	images(std::string filepath, int x = 0, int y = 0);
-	images(int Location_x = 0, int Location_y = 0, colour unicolour = colour(0, 0, 0, 255), int image_size = 16, int pixel_size = 8);
+	images(int Location_x = 0, int Location_y = 0, colour unicolour = colour(0, 0, 0, 255), int image_size = 16);
 	~images() { };
 
 	const int get_x() { return loc[0]; }
