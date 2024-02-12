@@ -27,6 +27,9 @@
     <ClCompile Include="Basic\images.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DataMan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Basic\colour.h">
@@ -36,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Basic\images.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DataMan.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

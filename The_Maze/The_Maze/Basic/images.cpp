@@ -8,6 +8,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <vector>
 
 struct BMPFileHeader { //https://solarianprogrammer.com/2018/11/19/cpp-reading-writing-bmp-images/
 	uint16_t file_type{ 0x4D42 };
@@ -144,7 +146,7 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 	std::ifstream bin{ filepath, std::ios_base::binary };
 	int stopper = 0;
 
-
+	std::string reader;
 
 
 	std::vector <float> reds;
@@ -165,7 +167,51 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 	int offset{ 0 };
 	int l{ 0 };
 	unsigned char r[10];
-	while (!inn.eof()) {
+
+	unsigned char Headder_uchar[14];
+	FILE* f;
+	fopen_s(&f, filepath.c_str(), "rb");
+	fread(Headder_uchar, sizeof(Headder_uchar), 14, f);
+
+	unsigned char filesize_uchar[4];
+	//unsigned char offsetdata[4];
+
+	filesize_uchar[3] = Headder_uchar[3 + 2];
+	filesize_uchar[2] = Headder_uchar[2 + 2];
+	filesize_uchar[1] = Headder_uchar[1 + 2];
+	filesize_uchar[0] = Headder_uchar[0 + 2]; //easy to make into Loop
+
+	/*offsetdata[3] = Headder_uchar[3 + 10];
+	offsetdata[2] = Headder_uchar[2 + 10];
+	offsetdata[1] = Headder_uchar[1 + 10];
+	offsetdata[0] = Headder_uchar[0 + 10];*/ //easy to make into Loop
+
+	//int offset_int = (int)offsetdata[3] + (int)offsetdata[2] + (int)offsetdata[1] + (int)offsetdata[0];
+	int size_int = (int)filesize_uchar[3] + (int)filesize_uchar[2] + (int)filesize_uchar[1] + (int)filesize_uchar[0];
+
+	//int infoheadder_size = offset_int - 14;
+
+	rewind(f);
+	char* full_file = new char(' ');
+	full_file = (char*)malloc(sizeof(char) * size_int);
+	fread(full_file, 1, size_int, f);
+
+
+	/*unsigned char* InfoHeadder_uchar = new unsigned char[infoheadder_size];
+	fread(InfoHeadder_uchar, sizeof(InfoHeadder_uchar), infoheadder_size, f);
+
+	unsigned char extract_uchar[4];
+
+	extract_uchar[0] = InfoHeadder_uchar[0];
+	extract_uchar[1] = InfoHeadder_uchar[1];
+	extract_uchar[2] = InfoHeadder_uchar[2];
+	extract_uchar[3] = InfoHeadder_uchar[3]; //easy to make into Loop
+
+	int check_logic = (int)extract_uchar[0] + (int)extract_uchar[1] + (int)extract_uchar[2] + (int)extract_uchar[3];
+	*/
+
+	while (getline(inn, reader)) {
+		//getline(inn,reader);
 		if (l == 10) {
 			inn.getline(reinterpret_cast<char*>(r), 10);
 		}
