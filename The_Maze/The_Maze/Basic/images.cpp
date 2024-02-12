@@ -171,31 +171,33 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 	unsigned char Headder_uchar[14];
 	FILE* f;
 	fopen_s(&f, filepath.c_str(), "rb");
-	fread(Headder_uchar, sizeof(Headder_uchar), 14, f);
+	fread(Headder_uchar, sizeof(unsigned char), 14, f);
 
 	unsigned char filesize_uchar[4];
-	//unsigned char offsetdata[4];
+	unsigned char offsetdata[4];
 
 	filesize_uchar[3] = Headder_uchar[3 + 2];
 	filesize_uchar[2] = Headder_uchar[2 + 2];
 	filesize_uchar[1] = Headder_uchar[1 + 2];
 	filesize_uchar[0] = Headder_uchar[0 + 2]; //easy to make into Loop
 
-	/*offsetdata[3] = Headder_uchar[3 + 10];
+	offsetdata[3] = Headder_uchar[3 + 10];
 	offsetdata[2] = Headder_uchar[2 + 10];
 	offsetdata[1] = Headder_uchar[1 + 10];
-	offsetdata[0] = Headder_uchar[0 + 10];*/ //easy to make into Loop
+	offsetdata[0] = Headder_uchar[0 + 10]; //easy to make into Loop
 
-	//int offset_int = (int)offsetdata[3] + (int)offsetdata[2] + (int)offsetdata[1] + (int)offsetdata[0];
+	int offset_int = (int)offsetdata[3] + (int)offsetdata[2] + (int)offsetdata[1] + (int)offsetdata[0];
 	int size_int = (int)filesize_uchar[3] + (int)filesize_uchar[2] + (int)filesize_uchar[1] + (int)filesize_uchar[0];
 
-	//int infoheadder_size = offset_int - 14;
+	int infoheadder_size = offset_int - 14;
 
+	//fclose(f);
 	rewind(f);
-	char* full_file = new char(' ');
-	full_file = (char*)malloc(sizeof(char) * size_int);
-	fread(full_file, 1, size_int, f);
-
+	//FILE* fi;
+	//fopen_s(&fi, filepath.c_str(), "rb");
+	unsigned char whole_file[198];
+	fread(whole_file, sizeof(unsigned char), 198, f);
+	int some = whole_file[3];
 
 	/*unsigned char* InfoHeadder_uchar = new unsigned char[infoheadder_size];
 	fread(InfoHeadder_uchar, sizeof(InfoHeadder_uchar), infoheadder_size, f);
