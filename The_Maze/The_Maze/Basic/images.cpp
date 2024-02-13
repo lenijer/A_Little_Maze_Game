@@ -143,7 +143,7 @@ private:
 std::vector <pixel*> bitmapread(std::string filepath) {
 
 	//BMP map(filepath.c_str());
-	std::ifstream bin{ filepath, std::ios_base::binary };
+	/*std::ifstream bin{filepath, std::ios_base::binary};
 	int stopper = 0;
 
 	std::string reader;
@@ -166,8 +166,9 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 
 	int offset{ 0 };
 	int l{ 0 };
-	unsigned char r[10];
+	unsigned char r[10];*/
 
+	//best Documentation for bitmaps: https://en.wikipedia.org/wiki/BMP_file_format
 	unsigned char Headder_uchar[14];
 	FILE* f;
 	fopen_s(&f, filepath.c_str(), "rb");
@@ -195,9 +196,110 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 	rewind(f);
 	//FILE* fi;
 	//fopen_s(&fi, filepath.c_str(), "rb");
+
+	//this uses specific file
+	//this file uses BITMAPINFOHEADDER 
 	unsigned char whole_file[198];
 	fread(whole_file, sizeof(unsigned char), 198, f);
-	int some = whole_file[3];
+
+	unsigned char sizeofDIB_uchar[4];
+
+	sizeofDIB_uchar[0] = whole_file[14 + 0];
+	sizeofDIB_uchar[1] = whole_file[14 + 1];
+	sizeofDIB_uchar[2] = whole_file[14 + 2];
+	sizeofDIB_uchar[3] = whole_file[14 + 3];
+
+	int sizeofDIB_int = (int)sizeofDIB_uchar[0] + (int)sizeofDIB_uchar[1] + (int)sizeofDIB_uchar[2] + (int)sizeofDIB_uchar[3];
+
+	unsigned char width_uchar[4];
+	unsigned char height_uchar[4];
+
+	width_uchar[0] = whole_file[14 + 4 + 0];
+	width_uchar[1] = whole_file[14 + 4 + 1];
+	width_uchar[2] = whole_file[14 + 4 + 2];
+	width_uchar[3] = whole_file[14 + 4 + 3];
+
+	height_uchar[0] = whole_file[14 + 8 + 0];
+	height_uchar[1] = whole_file[14 + 8 + 1];
+	height_uchar[2] = whole_file[14 + 8 + 2];
+	height_uchar[3] = whole_file[14 + 8 + 3];
+
+	int width_int = (int)width_uchar[0] + (int)width_uchar[1] + (int)width_uchar[2] + (int)width_uchar[3];
+	int height_int = (int)height_uchar[0] + (int)height_uchar[1] + (int)height_uchar[2] + (int)height_uchar[3];
+
+	unsigned char btspix[2];
+
+	btspix[0] = whole_file[14 + 14 + 0];
+	btspix[1] = whole_file[14 + 14 + 1];
+
+	int btspix_int = (int)btspix[0] + (int)btspix[1]; //is the colour depth of the image
+
+	unsigned char compression_uchar[4];
+
+	compression_uchar[0] = whole_file[14 + 16 + 0];
+	compression_uchar[1] = whole_file[14 + 16 + 1];
+	compression_uchar[2] = whole_file[14 + 16 + 2];
+	compression_uchar[3] = whole_file[14 + 16 + 3];
+
+	int compression_int = (int)compression_uchar[0] + (int)compression_uchar[1] + (int)compression_uchar[2] + (int)compression_uchar[3];
+	
+	int rowsize = ((btspix_int * width_int) / 32) * 4;
+	if (height_int < 0) {
+		height_int *= (-1);
+	}
+	int PixelArraySize = rowsize * height_int;
+	//Do something for padding
+
+	std::vector <pixel*> pix; //This ONLY works for Test.bmp
+	switch (compression_int) {
+	case 0: //BI_RGB
+		int start = 14 + sizeofDIB_int;
+		//int end = start + PixelArraySize;
+		unsigned char rgb[3][4]; //since i know it is 4 colours for this image
+		int x_int{ 0 };
+		int y_int{ 0 };
+
+		int j{ 0 };
+		for (int i = start; i < offset_int; i += 4) {
+			rgb[2][j] = whole_file[i + 0];
+			rgb[1][j] = whole_file[i + 1];
+			rgb[0][j] = whole_file[i + 2];
+			j++;
+		}
+
+		for (int i = offset_int; i < size_int; i++) {
+			if ((int)whole_file[i] == 1) {
+				pix.push_back(new pixel(colour((int)rgb[0][2], (int)rgb[1][2], (int)rgb[2][2], 255), x_int, y_int));
+				x_int++;
+				if (x_int >= width_int) {
+					x_int = 0;
+					y_int++;
+				}
+				pix.push_back(new pixel(colour((int)rgb[0][3], (int)rgb[1][3], (int)rgb[2][3], 255), x_int, y_int));
+				x_int++;
+				if (x_int >= width_int) {
+					x_int = 0;
+					y_int++;
+				}
+			}
+			if ((int)whole_file[i] == 35) {
+				pix.push_back(new pixel(colour((int)rgb[0][0], (int)rgb[1][0], (int)rgb[2][0], 255), x_int, y_int));
+				x_int++;
+				if (x_int >= width_int) {
+					x_int = 0;
+					y_int++;
+				}
+				pix.push_back(new pixel(colour((int)rgb[0][1], (int)rgb[1][1], (int)rgb[2][1], 255), x_int, y_int));
+				x_int++;
+				if (x_int >= width_int) {
+					x_int = 0;
+					y_int++;
+				}
+			}
+
+		}
+		break;
+	}
 
 	/*unsigned char* InfoHeadder_uchar = new unsigned char[infoheadder_size];
 	fread(InfoHeadder_uchar, sizeof(InfoHeadder_uchar), infoheadder_size, f);
@@ -212,7 +314,7 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 	int check_logic = (int)extract_uchar[0] + (int)extract_uchar[1] + (int)extract_uchar[2] + (int)extract_uchar[3];
 	*/
 
-	while (getline(inn, reader)) {
+	/*while (getline(inn, reader)) {
 		//getline(inn,reader);
 		if (l == 10) {
 			inn.getline(reinterpret_cast<char*>(r), 10);
@@ -275,8 +377,8 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 
 		p.push_back(new pixel(colour(re, g, b, 255), ys[i], xs[i]));
 	}
-
-	return p;
+	*/
+	return pix;
 }
 
 images::images(std::string filepath, int x, int y, int image_size)

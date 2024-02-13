@@ -149,14 +149,14 @@ int main()
     total_image_size = imagesize;
     //Player_pixel = pixel(colour(0, 0, 255), P_y * pixelsize, P_x * pixelsize, pixelsize);
     //Player_image = images(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2, colour(0, 0, 255), total_image_size);
-    Player_image = images("Assets/Images/Test_4.bmp", P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2, total_image_size);
+    Player_image = images("Assets/Images/Test.bmp", P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2, total_image_size);
 
     images* ny = { nullptr };
     for (int lx = 0; lx < screen_x; lx += total_image_size) {
         for (int ly = 0; ly < screen_y; ly += total_image_size) {
             if (Floor[(ly) / (total_image_size)][(lx) / (total_image_size)] == "W") {
                 //Objects.push_back(ny = new pixel(colour(0, 0, 0), lx, ly, pixelsize));
-                Objects.push_back(ny = new images(lx + total_image_size / 2, ly + total_image_size / 2, colour(0, 0, 0), total_image_size));
+                Objects.push_back(ny = new images(lx + total_image_size / 2, ly + total_image_size / 2, colour(0, 255, 0), total_image_size));
             }
             if (Floor[(ly) / (total_image_size)][(lx) / (total_image_size)] == "E") {
                 //Objects.push_back(ny = new pixel(colour(0, 255, 0), lx, ly, pixelsize));
