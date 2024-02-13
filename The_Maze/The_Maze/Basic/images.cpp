@@ -142,32 +142,6 @@ private:
 
 std::vector <pixel*> bitmapread(std::string filepath) {
 
-	//BMP map(filepath.c_str());
-	/*std::ifstream bin{filepath, std::ios_base::binary};
-	int stopper = 0;
-
-	std::string reader;
-
-
-	std::vector <float> reds;
-	std::vector <float> blues;
-	std::vector <float> greens;
-	std::string s = "";
-	int line{ 1 };
-
-	std::ifstream inn;
-	inn.open(filepath.c_str());
-
-	if (!inn.is_open()) {
-		s = "could not open";
-		std::vector <pixel*> pap;
-		return pap;
-	}
-
-	int offset{ 0 };
-	int l{ 0 };
-	unsigned char r[10];*/
-
 	//best Documentation for bitmaps: https://en.wikipedia.org/wiki/BMP_file_format
 	unsigned char Headder_uchar[14];
 	FILE* f;
@@ -192,15 +166,12 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 
 	int infoheadder_size = offset_int - 14;
 
-	//fclose(f);
 	rewind(f);
-	//FILE* fi;
-	//fopen_s(&fi, filepath.c_str(), "rb");
 
-	//this uses specific file
+	//this uses specifically the Test.bmp file
 	//this file uses BITMAPINFOHEADDER 
-	unsigned char whole_file[198];
-	fread(whole_file, sizeof(unsigned char), 198, f);
+	unsigned char whole_file[198]; //need some way of having adaptive size for it
+	fread(whole_file, sizeof(unsigned char), size_int, f);
 
 	unsigned char sizeofDIB_uchar[4];
 
@@ -254,7 +225,6 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 	switch (compression_int) {
 	case 0: //BI_RGB
 		int start = 14 + sizeofDIB_int;
-		//int end = start + PixelArraySize;
 		unsigned char rgb[3][4]; //since i know it is 4 colours for this image
 		int x_int{ 0 };
 		int y_int{ 0 };
@@ -300,84 +270,6 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 		}
 		break;
 	}
-
-	/*unsigned char* InfoHeadder_uchar = new unsigned char[infoheadder_size];
-	fread(InfoHeadder_uchar, sizeof(InfoHeadder_uchar), infoheadder_size, f);
-
-	unsigned char extract_uchar[4];
-
-	extract_uchar[0] = InfoHeadder_uchar[0];
-	extract_uchar[1] = InfoHeadder_uchar[1];
-	extract_uchar[2] = InfoHeadder_uchar[2];
-	extract_uchar[3] = InfoHeadder_uchar[3]; //easy to make into Loop
-
-	int check_logic = (int)extract_uchar[0] + (int)extract_uchar[1] + (int)extract_uchar[2] + (int)extract_uchar[3];
-	*/
-
-	/*while (getline(inn, reader)) {
-		//getline(inn,reader);
-		if (l == 10) {
-			inn.getline(reinterpret_cast<char*>(r), 10);
-		}
-		l++;
-	}
-
-
-	//turtorial https://www.youtube.com/watch?v=NcEE5xmpgQ0
-	const int headersize = 14;
-	const int informationheadersize = 108;
-
-	unsigned char fileheader[headersize];
-	inn.read(reinterpret_cast<char*>(fileheader), headersize);
-	line += headersize;
-
-	unsigned char informationfileheader[informationheadersize];
-	inn.read(reinterpret_cast<char*>(informationfileheader), informationheadersize);
-	line += informationheadersize;
-
-	int filesize = fileheader[2] + (fileheader[3] << 8) + (fileheader[4] << 16) + (fileheader[5] << 24);
-	int width = informationfileheader[4] + (informationfileheader[5] << 8) + (informationfileheader[6] << 16) + (informationfileheader[7] << 24);
-	int height = informationfileheader[8] + (informationfileheader[9] << 8) + (informationfileheader[10] << 16) + (informationfileheader[11] << 24);
-
-	int array = width * height;//how an array would be in size
-
-	const int paddingAmount = ((4 - (width * 3) % 4) % 4);
-
-	std::vector<int>xs;
-	std::vector<int>ys;
-	//std::vector<int>alpha;
-	for (int y = 0; y < height; y++) {
-		for (int x = 0; x < width; x++) {
-			unsigned char c[3];
-			inn.getline(reinterpret_cast<char*>(c), line);
-			line++;
-
-			inn.read(reinterpret_cast<char*>(c), 3);
-
-			reds.push_back(static_cast<float>(c[2]) / 255.0f);
-			greens.push_back(static_cast<float>(c[1]) / 255.0f);
-			blues.push_back(static_cast<float>(c[0]) / 255.0f);
-			//alpha.push_back(static_cast<int>(c[3]));
-
-			xs.push_back(x);
-			ys.push_back(y);
-		}
-
-		inn.ignore(paddingAmount);
-	}
-
-	inn.close();
-	//end of turtorial part
-	std::vector <pixel*> p;
-	int re{ 0 }, g{ 0 }, b{ 0 };
-	for (int i = 0; i < reds.size(); i++) {
-		re = reds[i] * 255;
-		g = greens[i] * 255;
-		b = blues[i] * 255;
-
-		p.push_back(new pixel(colour(re, g, b, 255), ys[i], xs[i]));
-	}
-	*/
 	return pix;
 }
 
