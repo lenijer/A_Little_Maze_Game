@@ -8,142 +8,13 @@
 
 #include <iostream>
 #include <fstream>
-#include <sstream>
+//#include <sstream>
 #include <vector>
-
-struct BMPFileHeader { //https://solarianprogrammer.com/2018/11/19/cpp-reading-writing-bmp-images/
-	uint16_t file_type{ 0x4D42 };
-	uint32_t file_size{ 0 };
-	uint16_t reserved1{ 0 };
-	uint16_t reserved2{ 0 };
-	uint32_t offset_data{ 0 };
-};
-
-struct BMPInfoHeader {
-	uint32_t size{ 0 };
-	int32_t width{ 0 };
-	int32_t height{ 0 };
-
-	uint16_t planes{ 1 };
-	uint16_t bit_count{ 0 };
-	uint32_t compression{ 0 };
-	uint32_t size_image{ 0 };
-	int32_t x_pixel_per_meter{ 0 };
-	int32_t y_pixel_per_meter{ 0 };
-	uint32_t colors_used{ 0 };
-	uint32_t colors_important{ 0 };
-};
-
-struct BMPColorHeader {
-	uint32_t red_mask{ 0x00ff0000 };
-	uint32_t green_mask{ 0x0000ff00 };
-	uint32_t blue_mask{ 0x000000ff };
-	uint32_t alpha_mask{ 0xff000000 };
-	uint32_t color_space_type{ 0x73524742 };
-	uint32_t unused[16]{ 0 };
-};
-
-struct BMP {
-	BMPFileHeader file_header;
-	BMPInfoHeader bmp_info_header;
-	BMPColorHeader bmp_color_header;
-	std::vector<uint8_t> data;
-
-	BMP(const char* fname) {
-		read(fname);
-	}
-
-	void read(const char* fname) {
-		std::ifstream inp{ fname, std::ios_base::binary };
-		if (inp) {
-			inp.read((char*)&file_header, sizeof(file_header));
-			if (file_header.file_type != 0x4D42) {
-
-			}
-			inp.read((char*)&bmp_info_header, sizeof(bmp_info_header));
-
-			if (bmp_info_header.bit_count == 32) {
-				if (bmp_info_header.size >= (sizeof(BMPInfoHeader) + sizeof(BMPColorHeader))) {
-					inp.read((char*)&bmp_color_header, sizeof(bmp_color_header));
-					check_color_header(bmp_color_header);
-				}
-				else {
-
-				}
-			}
-			inp.seekg(file_header.offset_data, inp.beg);
-			
-			if (bmp_info_header.bit_count == 32) {
-				bmp_info_header.size = sizeof(BMPInfoHeader) + sizeof(BMPColorHeader);
-				file_header.offset_data = sizeof(BMPFileHeader) + sizeof(BMPInfoHeader) + sizeof(BMPColorHeader);
-			}
-			else {
-				bmp_info_header.size = sizeof(BMPInfoHeader);
-				file_header.offset_data = sizeof(BMPFileHeader) + sizeof(BMPInfoHeader);
-			}
-			file_header.file_size = file_header.offset_data;
-			
-			if (bmp_info_header.height < 0) {
-
-			}
-			
-			data.resize(bmp_info_header.width * bmp_info_header.height * bmp_info_header.bit_count / 8);
-			
-			if (bmp_info_header.width % 4 == 0) {
-				inp.read((char*)data.data(), data.size());
-				file_header.file_size += data.size();
-			}
-			else {
-				row_stride = bmp_info_header.width * bmp_info_header.bit_count / 8;
-				uint32_t new_stride = make_stride_aligned(4);
-				std::vector<uint8_t> padding_row(new_stride - row_stride);
-				
-				for (int y = 0; y < bmp_info_header.height; ++y) {
-					inp.read((char*)(data.data() + row_stride * y), row_stride);
-					inp.read((char*)padding_row.data(), padding_row.size());
-				}
-				file_header.file_size += data.size() + bmp_info_header.height * padding_row.size();
-			}
-		}
-		else {
-
-		}
-	}
-
-	BMP(int32_t width, int32_t height, bool has_alpha = true) {
-
-	}
-
-	void write(const char* fname) {
-
-	}
-
-private:
-	uint32_t row_stride{ 0 };
-
-	void check_color_header(BMPColorHeader & bmp_color_header) {
-		BMPColorHeader expected_color_header;
-		if (expected_color_header.red_mask != bmp_color_header.red_mask || expected_color_header.blue_mask != bmp_color_header.blue_mask || expected_color_header.green_mask != bmp_color_header.green_mask || expected_color_header.alpha_mask != bmp_color_header.alpha_mask) {
-
-		}
-		if (expected_color_header.color_space_type != bmp_color_header.color_space_type) {
-
-		}
-	}
-
-	uint32_t make_stride_aligned(uint32_t align_stride) {
-		uint32_t new_stride = row_stride;
-		while (new_stride % align_stride != 0) {
-			new_stride++;
-		}
-		return new_stride;
-	}
-};
 
 std::vector <pixel*> bitmapread(std::string filepath) {
 
 	//best Documentation for bitmaps: https://en.wikipedia.org/wiki/BMP_file_format
-	unsigned char Headder_uchar[14];
+	unsigned char Headder_uchar[14]; //Main headder is always size 14
 	FILE* f;
 	fopen_s(&f, filepath.c_str(), "rb");
 	fread(Headder_uchar, sizeof(unsigned char), 14, f);
@@ -151,122 +22,93 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 	unsigned char filesize_uchar[4];
 	unsigned char offsetdata[4];
 
-	filesize_uchar[3] = Headder_uchar[3 + 2];
-	filesize_uchar[2] = Headder_uchar[2 + 2];
-	filesize_uchar[1] = Headder_uchar[1 + 2];
-	filesize_uchar[0] = Headder_uchar[0 + 2]; //easy to make into Loop
-
-	offsetdata[3] = Headder_uchar[3 + 10];
-	offsetdata[2] = Headder_uchar[2 + 10];
-	offsetdata[1] = Headder_uchar[1 + 10];
-	offsetdata[0] = Headder_uchar[0 + 10]; //easy to make into Loop
+	for (int i = 0; i < 4; i++) { //4 is since it is 4 bytes of data
+		filesize_uchar[i] = Headder_uchar[i + 2];
+		offsetdata[i] = Headder_uchar[i + 10];
+	}
 
 	int offset_int = (int)offsetdata[3] + (int)offsetdata[2] + (int)offsetdata[1] + (int)offsetdata[0];
 	int size_int = (int)filesize_uchar[3] + (int)filesize_uchar[2] + (int)filesize_uchar[1] + (int)filesize_uchar[0];
 
-	int infoheadder_size = offset_int - 14;
-
 	rewind(f);
 
-	//this uses specifically the Test.bmp file
-	//this file uses BITMAPINFOHEADDER 
-	unsigned char whole_file[198]; //need some way of having adaptive size for it
-	fread(whole_file, sizeof(unsigned char), size_int, f);
-
-	unsigned char sizeofDIB_uchar[4];
-
-	sizeofDIB_uchar[0] = whole_file[14 + 0];
-	sizeofDIB_uchar[1] = whole_file[14 + 1];
-	sizeofDIB_uchar[2] = whole_file[14 + 2];
-	sizeofDIB_uchar[3] = whole_file[14 + 3];
-
-	int sizeofDIB_int = (int)sizeofDIB_uchar[0] + (int)sizeofDIB_uchar[1] + (int)sizeofDIB_uchar[2] + (int)sizeofDIB_uchar[3];
-
-	unsigned char width_uchar[4];
-	unsigned char height_uchar[4];
-
-	width_uchar[0] = whole_file[14 + 4 + 0];
-	width_uchar[1] = whole_file[14 + 4 + 1];
-	width_uchar[2] = whole_file[14 + 4 + 2];
-	width_uchar[3] = whole_file[14 + 4 + 3];
-
-	height_uchar[0] = whole_file[14 + 8 + 0];
-	height_uchar[1] = whole_file[14 + 8 + 1];
-	height_uchar[2] = whole_file[14 + 8 + 2];
-	height_uchar[3] = whole_file[14 + 8 + 3];
-
-	int width_int = (int)width_uchar[0] + (int)width_uchar[1] + (int)width_uchar[2] + (int)width_uchar[3];
-	int height_int = (int)height_uchar[0] + (int)height_uchar[1] + (int)height_uchar[2] + (int)height_uchar[3];
+	//this file uses BITMAPINFOHEADDER (BM, seems windows specific)
+	std::vector <unsigned char> wholefile_vec;
+	wholefile_vec.resize(size_int);
+	fread(&wholefile_vec[0], sizeof(unsigned char), size_int, f);
 
 	unsigned char btspix[2];
 
-	btspix[0] = whole_file[14 + 14 + 0];
-	btspix[1] = whole_file[14 + 14 + 1];
+	btspix[0] = wholefile_vec[14 + 14 + 0];
+	btspix[1] = wholefile_vec[14 + 14 + 1];
 
 	int btspix_int = (int)btspix[0] + (int)btspix[1]; //is the colour depth of the image
 
+	unsigned char sizeofDIB_uchar[4];
+	unsigned char width_uchar[4];
+	unsigned char height_uchar[4];
 	unsigned char compression_uchar[4];
 
-	compression_uchar[0] = whole_file[14 + 16 + 0];
-	compression_uchar[1] = whole_file[14 + 16 + 1];
-	compression_uchar[2] = whole_file[14 + 16 + 2];
-	compression_uchar[3] = whole_file[14 + 16 + 3];
+	for (int i = 0; i < 4; i++) {
+		sizeofDIB_uchar[i] = wholefile_vec[14 + i];
+		width_uchar[i] = wholefile_vec[14 + 4 + i];
+		height_uchar[i] = wholefile_vec[14 + 8 + i];
+		compression_uchar[i] = wholefile_vec[14 + 16 + i];
+	}
 
+	int sizeofDIB_int = (int)sizeofDIB_uchar[0] + (int)sizeofDIB_uchar[1] + (int)sizeofDIB_uchar[2] + (int)sizeofDIB_uchar[3];
+	int width_int = (int)width_uchar[0] + (int)width_uchar[1] + (int)width_uchar[2] + (int)width_uchar[3];
+	int height_int = (int)height_uchar[0] + (int)height_uchar[1] + (int)height_uchar[2] + (int)height_uchar[3];
 	int compression_int = (int)compression_uchar[0] + (int)compression_uchar[1] + (int)compression_uchar[2] + (int)compression_uchar[3];
-	
+		
 	int rowsize = ((btspix_int * width_int) / 32) * 4;
 	if (height_int < 0) {
 		height_int *= (-1);
 	}
 	int PixelArraySize = rowsize * height_int;
-	//Do something for padding
 
-	std::vector <pixel*> pix; //This ONLY works for Test.bmp
+	//This ONLY works for Test.bmp
+	std::vector <pixel*> pix;
 	switch (compression_int) {
 	case 0: //BI_RGB
+		//REMEMBER Padding
+		//these has no padding since width is a multiple of 4
 		int start = 14 + sizeofDIB_int;
-		unsigned char rgb[3][4]; //since i know it is 4 colours for this image
-		int x_int{ 0 };
-		int y_int{ 0 };
+		std::vector <std::vector <unsigned char>> rgb_vec;
 
 		int j{ 0 };
 		for (int i = start; i < offset_int; i += 4) {
-			rgb[2][j] = whole_file[i + 0];
-			rgb[1][j] = whole_file[i + 1];
-			rgb[0][j] = whole_file[i + 2];
+			rgb_vec.push_back({ wholefile_vec[i + 2], wholefile_vec[i + 1], wholefile_vec[i + 0] });
 			j++;
 		}
 
+		int read;
+		int ind[2];
+		int x_int{ 0 };
+		int y_int = height_int - 1;
+
 		for (int i = offset_int; i < size_int; i++) {
-			if ((int)whole_file[i] == 1) {
-				pix.push_back(new pixel(colour((int)rgb[0][2], (int)rgb[1][2], (int)rgb[2][2], 255), x_int, y_int));
-				x_int++;
-				if (x_int >= width_int) {
-					x_int = 0;
-					y_int++;
-				}
-				pix.push_back(new pixel(colour((int)rgb[0][3], (int)rgb[1][3], (int)rgb[2][3], 255), x_int, y_int));
-				x_int++;
-				if (x_int >= width_int) {
-					x_int = 0;
-					y_int++;
-				}
-			}
-			if ((int)whole_file[i] == 35) {
-				pix.push_back(new pixel(colour((int)rgb[0][0], (int)rgb[1][0], (int)rgb[2][0], 255), x_int, y_int));
-				x_int++;
-				if (x_int >= width_int) {
-					x_int = 0;
-					y_int++;
-				}
-				pix.push_back(new pixel(colour((int)rgb[0][1], (int)rgb[1][1], (int)rgb[2][1], 255), x_int, y_int));
-				x_int++;
-				if (x_int >= width_int) {
-					x_int = 0;
-					y_int++;
-				}
+			read = (int)wholefile_vec[i];
+
+			ind[1] = read % 16;
+			read = read / 16;
+			ind[0] = read % 16;
+
+			std::vector <unsigned char> rgb = rgb_vec[ind[0]];
+			pix.push_back(new pixel(colour((int)rgb[0], (int)rgb[1], (int)rgb[2], 255), x_int, y_int));
+			x_int++;
+			if (x_int >= width_int) {
+				x_int = 0;
+				y_int--;
 			}
 
+			rgb = rgb_vec[ind[1]];
+			pix.push_back(new pixel(colour((int)rgb[0], (int)rgb[1], (int)rgb[2], 255), x_int, y_int));
+			x_int++;
+			if (x_int >= width_int) {
+				x_int = 0;
+				y_int--;
+			}
 		}
 		break;
 	}
