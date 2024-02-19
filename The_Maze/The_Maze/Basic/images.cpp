@@ -1,16 +1,17 @@
 /*
 *       Made by: Lenita Njærheim
 *           Created On: 01/12-2023
-*           Completed:
+*           Completed: 17/02-2024
 *       Project Name: The Maze
 */
 #include "images.h"
 
 #include <iostream>
 #include <fstream>
-//#include <sstream>
 #include <vector>
 
+//This ONLY works for bitmaps on windows (probably also only with bitdepth of 4) and width has to be a multiple of 4
+//NOTE: width and height har to be 16 for it do display corretly
 std::vector <pixel*> bitmapread(std::string filepath) {
 
 	//best Documentation for bitmaps: https://en.wikipedia.org/wiki/BMP_file_format
@@ -67,7 +68,6 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 	}
 	int PixelArraySize = rowsize * height_int;
 
-	//This ONLY works for Test.bmp
 	std::vector <pixel*> pix;
 	switch (compression_int) {
 	case 0: //BI_RGB
