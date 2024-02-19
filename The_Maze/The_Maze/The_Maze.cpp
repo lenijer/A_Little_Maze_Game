@@ -156,19 +156,19 @@ int main()
         for (int ly = 0; ly < screen_y; ly += total_image_size) {
             if (Floor[(ly) / (total_image_size)][(lx) / (total_image_size)] == "W") {
                 //Objects.push_back(ny = new pixel(colour(0, 0, 0), lx, ly, pixelsize));
-                Objects.push_back(ny = new images(lx + total_image_size / 2, ly + total_image_size / 2, colour(0, 0, 0), total_image_size));
+                Objects.push_back(ny = new images("Assets/Images/Wall.bmp", lx + total_image_size / 2, ly + total_image_size / 2, total_image_size));
             }
             if (Floor[(ly) / (total_image_size)][(lx) / (total_image_size)] == "E") {
                 //Objects.push_back(ny = new pixel(colour(0, 255, 0), lx, ly, pixelsize));
-                Objects.push_back(ny = new images(lx + total_image_size / 2, ly + total_image_size / 2, colour(0, 255, 0), total_image_size));
+                Objects.push_back(ny = new images("Assets/Images/End.bmp", lx + total_image_size / 2, ly + total_image_size / 2, total_image_size));
             }
             if (Floor[(ly) / (total_image_size)][(lx) / (total_image_size)] == "S") {
                 //Objects.push_back(ny = new pixel(colour(255, 200, 0), lx, ly, pixelsize));
-                Objects.push_back(ny = new images(lx + total_image_size / 2, ly + total_image_size / 2, colour(255, 200, 0), total_image_size));
+                Objects.push_back(ny = new images("Assets/Images/Start.bmp", lx + total_image_size / 2, ly + total_image_size / 2, total_image_size));
             }
             if (Floor[(ly) / (total_image_size)][(lx) / (total_image_size)] == " ") {
                 //Objects.push_back(ny = new pixel(colour(255, 255, 255), lx, ly, pixelsize));
-                Objects.push_back(ny = new images(lx + total_image_size / 2, ly + total_image_size / 2, colour(255, 255, 255), total_image_size));
+                Objects.push_back(ny = new images("Assets/Images/Floor.bmp", lx + total_image_size / 2, ly + total_image_size / 2, total_image_size));
             }
         }
     }

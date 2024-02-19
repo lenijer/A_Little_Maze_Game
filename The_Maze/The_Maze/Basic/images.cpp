@@ -78,7 +78,7 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 
 		int j{ 0 };
 		for (int i = start; i < offset_int; i += 4) {
-			rgb_vec.push_back({ wholefile_vec[i + 2], wholefile_vec[i + 1], wholefile_vec[i + 0] });
+			rgb_vec.push_back({ wholefile_vec[i + 2], wholefile_vec[i + 1], wholefile_vec[i + 0], wholefile_vec[i + 3]});
 			j++;
 		}
 
@@ -129,14 +129,14 @@ images::images(std::string filepath, int x, int y, int image_size)
 		}
 	}
 	std::string filetype = "";
-	for (int i = period; i < filepath.length(); i++) {
+	for (int i = period; i < filepath.length(); i++) {//will be used to check the filetype, different files have different structure
 		filetype += filepath[i];
 	}
 	if (filetype == ".bmp") {
 		pixels = bitmapread(filepath);
 	}
 	for (int i = 0; i < pixels.size(); i++) {
-		pixels[i]->move(pixels[i]->get_x() + loc[0] - size/2, pixels[i]->get_y() + loc[1] - size / 2);
+		pixels[i]->move(pixels[i]->get_x() + loc[0] - size/2, pixels[i]->get_y() + loc[1] - size / 2); //moves the image to the location and centers it
 	}
 }
 
