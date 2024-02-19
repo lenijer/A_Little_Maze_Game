@@ -69,14 +69,17 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 	int PixelArraySize = rowsize * height_int;
 
 	std::vector <pixel*> pix;
+	int start;
+	std::vector <std::vector <unsigned char>> rgb_vec;
+	int x_int{ 0 };
+	int y_int = height_int - 1;
+	int j{ 0 };
 	switch (compression_int) {
 	case 0: //BI_RGB
 		//REMEMBER Padding
 		//these has no padding since width is a multiple of 4
-		int start = 14 + sizeofDIB_int;
-		std::vector <std::vector <unsigned char>> rgb_vec;
+		start = 14 + sizeofDIB_int;
 
-		int j{ 0 };
 		for (int i = start; i < offset_int; i += 4) {
 			rgb_vec.push_back({ wholefile_vec[i + 2], wholefile_vec[i + 1], wholefile_vec[i + 0], wholefile_vec[i + 3]});
 			j++;
@@ -84,8 +87,6 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 
 		int read;
 		int ind[2];
-		int x_int{ 0 };
-		int y_int = height_int - 1;
 
 		for (int i = offset_int; i < size_int; i++) {
 			read = (int)wholefile_vec[i];
@@ -110,6 +111,9 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 				y_int--;
 			}
 		}
+		break;
+	case 3: //BI_BITFIELDS (usses Huffman 1D compression method)
+
 		break;
 	}
 	return pix;
