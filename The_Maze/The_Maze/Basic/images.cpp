@@ -23,13 +23,17 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 	unsigned char filesize_uchar[4];
 	unsigned char offsetdata[4];
 
+	filesize_uchar[0] = Headder_uchar[0 + 2];
+	filesize_uchar[1] = Headder_uchar[1 + 2];
+	filesize_uchar[2] = Headder_uchar[2 + 2];
+	filesize_uchar[3] = Headder_uchar[3 + 2];
+
 	for (int i = 0; i < 4; i++) { //4 is since it is 4 bytes of data
-		filesize_uchar[i] = Headder_uchar[i + 2];
 		offsetdata[i] = Headder_uchar[i + 10];
 	}
 
 	int offset_int = (int)offsetdata[3] + (int)offsetdata[2] + (int)offsetdata[1] + (int)offsetdata[0];
-	int size_int = (int)filesize_uchar[3] + (int)filesize_uchar[2] + (int)filesize_uchar[1] + (int)filesize_uchar[0];
+	int size_int = (int)filesize_uchar[3] + (int)filesize_uchar[2] + (((int)filesize_uchar[1] / 4) * 1024) /*this might be wrong???*/ + (int)filesize_uchar[0];
 
 	rewind(f);
 
@@ -112,8 +116,19 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 			}
 		}
 		break;
-	case 3: //BI_BITFIELDS (usses Huffman 1D compression method)
-
+	case 3: //BI_BITFIELDS (supposedly uses Huffman 1D compression method)
+		//seems to just store colour by colour
+		//REMEMBER padding
+		//Current file should work fine without padding
+		start = offset_int;
+		for (int i = start; i < wholefile_vec.size(); i += 4) {
+			pix.push_back(new pixel(colour((int)wholefile_vec[i + 2], (int)wholefile_vec[i + 1], (int)wholefile_vec[i], (int)wholefile_vec[i + 3]), x_int, y_int));
+			x_int++;
+			if (x_int >= width_int) {
+				x_int = 0;
+				y_int--;
+			}
+		}
 		break;
 	}
 	return pix;
@@ -141,6 +156,9 @@ images::images(std::string filepath, int x, int y, int image_size)
 	}
 	for (int i = 0; i < pixels.size(); i++) {
 		pixels[i]->move(pixels[i]->get_x() + loc[0] - size/2, pixels[i]->get_y() + loc[1] - size / 2); //moves the image to the location and centers it
+		if (pixels[i]->GetColour().GetAlpha() < 255 && hastransparentpixels != true) {
+			hastransparentpixels = true;
+		}
 	}
 }
 
@@ -161,6 +179,18 @@ images::images(int Location_x, int Location_y, colour unicolour, int image_size)
 			pixels.push_back(new pixel(unicolour, x, y));
 		}
 	}
+}
+
+pixel images::GetPixel(int x, int y)
+{
+	pixel p;
+	for (int i = 0; i < pixels.size(); i++) {
+		if (pixels[i]->get_x() == x && pixels[i]->get_y() == y) {
+			p = *pixels[i];
+			break;
+		}
+	}
+	return p;
 }
 
 void images::move(int new_x, int new_y)

@@ -96,7 +96,31 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
         //TextOut(hdc, 0, 0, "Hello, Windows!", 15);
         for (int i = 0; i < Objects.size(); i++ /*int i = Objects.size() - 1; i > 0; i--*/) {
             if (Player_image.get_x() == Objects[i]->get_x() && Player_image.get_y() == Objects[i]->get_y()) {
-                Player_image.draw(someHDC);
+                if (Player_image.HasTransparentPixels()) {
+                    int r1, g1, b1, r2, b2, g2, a; 
+                    float r, g, b;
+                    for (int j = 0; j < Player_image.Vector_Length(); j++) {
+                        r1 = Player_image.GetPixel(j).GetColour().GetRed();
+                        g1 = Player_image.GetPixel(j).GetColour().GetGreen();
+                        b1 = Player_image.GetPixel(j).GetColour().GetBlue();
+                        a = Player_image.GetPixel(j).GetColour().GetAlpha();
+
+                        r2 = Objects[i]->GetPixel(Player_image.GetPixel(j).get_x(), Player_image.GetPixel(j).get_y()).GetColour().GetRed();
+                        g2 = Objects[i]->GetPixel(Player_image.GetPixel(j).get_x(), Player_image.GetPixel(j).get_y()).GetColour().GetGreen();
+                        b2 = Objects[i]->GetPixel(Player_image.GetPixel(j).get_x(), Player_image.GetPixel(j).get_y()).GetColour().GetBlue();
+
+                        r = r1 * ((float)a / 255) + r2 * ((255 - (float)a) / 255);
+                        g = g1 * ((float)a / 255) + g2 * ((255 - (float)a) / 255);
+                        b = b1 * ((float)a / 255) + b2 * ((255 - (float)a) / 255);
+
+                        colour c = colour((int)r, (int)g, (int)b, 255);
+                        pixel p = pixel(c, Player_image.GetPixel(j).get_x(), Player_image.GetPixel(j).get_y());
+                        p.drawpixel(someHDC);
+                    }
+                }
+                else {
+                    Player_image.draw(someHDC);
+                }
             }
             else {
                 Objects[i]->draw(someHDC);
@@ -150,6 +174,7 @@ int main()
     //Player_pixel = pixel(colour(0, 0, 255), P_y * pixelsize, P_x * pixelsize, pixelsize);
     //Player_image = images(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2, colour(0, 0, 255), total_image_size);
     Player_image = images("Assets/Images/Transparent.bmp", P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2, total_image_size);
+    Player_image.layer = 1;
 
     images* ny = { nullptr };
     for (int lx = 0; lx < screen_x; lx += total_image_size) {

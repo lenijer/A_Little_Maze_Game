@@ -16,6 +16,8 @@ public:
 
 	const int get_x() { return loc[0]; }
 	const int get_y() { return loc[1]; }
+	
+	colour GetColour() { return c; }
 
 	void move(int new_x, int new_y);
 	void drawpixel(HDC hdc);
