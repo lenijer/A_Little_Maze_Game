@@ -173,7 +173,7 @@ int main()
     total_image_size = imagesize;
     //Player_pixel = pixel(colour(0, 0, 255), P_y * pixelsize, P_x * pixelsize, pixelsize);
     //Player_image = images(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2, colour(0, 0, 255), total_image_size);
-    Player_image = images("Assets/Images/HalfTransparent.bmp", P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2, total_image_size);
+    Player_image = images("Assets/Images/Player.bmp", P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2, total_image_size);
     Player_image.layer = 1;
 
     images* ny = { nullptr };
