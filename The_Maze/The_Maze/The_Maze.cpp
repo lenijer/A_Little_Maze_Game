@@ -231,23 +231,20 @@ int main()
         TranslateMessage(&messages);
         DispatchMessage(&messages);
 
-        Player_image.move(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2);
+        //Player_image.move(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2);
         if (input.A) {
             if (Floor[P_x][P_y - 1] != "W") {
                 P_y--;
-                //Player_image.move(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2);
             }
         }
         if (input.D) {
             if (Floor[P_x][P_y + 1] != "W") {
                 P_y++;
-                //Player_image.move(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2);
             }
         }
         if (input.W) {
-            if (Floor[P_x - 1][P_y] != "W"){
+            if (Floor[P_x - 1][P_y] != "W" && Floor[P_x][P_y] != "S"){
                 P_x--;
-                //Player_image.move(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2);
             }
         }
         if (input.S) {
@@ -255,9 +252,12 @@ int main()
                 P_x++;
             }
         }
-        //Player_image.move(P_y* total_image_size + total_image_size / 2, P_x* total_image_size + total_image_size / 2);
-
+        Player_image.move(P_y* total_image_size + total_image_size / 2, P_x* total_image_size + total_image_size / 2);
         RedrawWindow(windowHandle, NULL, NULL, RDW_INVALIDATE);
+        GetMessage(&messages, NULL, 0, 0);
+
+        TranslateMessage(&messages);
+        DispatchMessage(&messages);
 
         if (Floor[P_x][P_y] == "E") {
             DestroyWindow(windowHandle);
