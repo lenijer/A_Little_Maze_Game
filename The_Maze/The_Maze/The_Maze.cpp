@@ -13,6 +13,7 @@
 #include "Basic/colour.h"
 #include "Basic/pixel.h"
 #include "Basic/images.h"
+#include "Basic/Input.h"
 
 const int imagesize = 16; //fine on even numbers
 const int x = 20;
@@ -43,6 +44,7 @@ int P_x = 0; //player x
 int P_y = 11; //player y
 
 HDC someHDC;
+Input input;
 
 //pixel Player_pixel;
 images Player_image;
@@ -51,38 +53,59 @@ std::vector <images*> Objects;
 int screen_x;
 int screen_y;
 int total_image_size;
+int game_timer{ 0 };
+bool run{ true };
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
     switch (message)
     {
     case WM_KEYDOWN:
         if (wparam == 0x41/*A key https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes */) {
-            if (Floor[P_x][P_y - 1] != "W")
+            /*if (Floor[P_x][P_y - 1] != "W")
             {
                 P_y--;
-            }
+            }*/
+            input.A = true;
         }
         if (wparam == 0x44/*D key*/) {
-            if (Floor[P_x][P_y + 1] != "W")
+            /*if (Floor[P_x][P_y + 1] != "W")
             {
                 P_y++;
-            }
+            }*/
+            input.D = true;
         }
         if (wparam == 0x53/*S key*/) {
-            if (Floor[P_x + 1][P_y] != "W")
+            /*if (Floor[P_x + 1][P_y] != "W")
             {
                 P_x++;
-            }
+            }*/
+            input.S = true;
         }
         if (wparam == 0x57/*W key*/) {
-            if (Floor[P_x - 1][P_y] != "W")
+            /*if (Floor[P_x - 1][P_y] != "W")
             {
                 P_x--;
-            }
+            }*/
+            input.W = true;
         }
         //Player_pixel.move(P_y * pixelsize, P_x * pixelsize);
-        Player_image.move(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2);
+        //Player_image.move(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2);
         //SendMessage(hwnd, WM_PAINT, wparam, lparam);
+        return 0L;
+        break;
+    case WM_KEYUP:
+        if (wparam == 0x41) {
+            input.A = false;
+        }
+        if (wparam == 0x44) {
+            input.D = false;
+        }
+        if (wparam == 0x53) {
+            input.S = false;
+        }
+        if (wparam == 0x57) {
+            input.W = false;
+        }
         return 0L;
         break;
     case  WM_ERASEBKGND:
@@ -132,6 +155,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
     case WM_CHAR:
         if (wparam == VK_ESCAPE) {
             DestroyWindow(hwnd);
+            run = false;
         }
         break;
     case WM_DESTROY:
@@ -200,15 +224,44 @@ int main()
     ny = new images();
     delete ny;
 
-    while (GetMessage(&messages, NULL, 0, 0) > 0) {
+    while (run) {
+        game_timer++;
+        GetMessage(&messages, NULL, 0, 0);
 
         TranslateMessage(&messages);
         DispatchMessage(&messages);
+
+        Player_image.move(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2);
+        if (input.A) {
+            if (Floor[P_x][P_y - 1] != "W") {
+                P_y--;
+                //Player_image.move(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2);
+            }
+        }
+        if (input.D) {
+            if (Floor[P_x][P_y + 1] != "W") {
+                P_y++;
+                //Player_image.move(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2);
+            }
+        }
+        if (input.W) {
+            if (Floor[P_x - 1][P_y] != "W"){
+                P_x--;
+                //Player_image.move(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2);
+            }
+        }
+        if (input.S) {
+            if (Floor[P_x + 1][P_y] != "W"){
+                P_x++;
+            }
+        }
+        //Player_image.move(P_y* total_image_size + total_image_size / 2, P_x* total_image_size + total_image_size / 2);
 
         RedrawWindow(windowHandle, NULL, NULL, RDW_INVALIDATE);
 
         if (Floor[P_x][P_y] == "E") {
             DestroyWindow(windowHandle);
+            run = false;
         }
     }
 

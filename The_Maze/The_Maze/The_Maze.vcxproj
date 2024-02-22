@@ -136,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Basic\colour.h" />
+    <ClInclude Include="Basic\Input.h" />
     <ClInclude Include="Basic\pixel.h" />
     <ClInclude Include="Basic\images.h" />
   </ItemGroup>
