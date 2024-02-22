@@ -14,11 +14,12 @@
 #include "Basic/pixel.h"
 #include "Basic/images.h"
 #include "Basic/Input.h"
+#include "Object_Classes/Floor.h"
 
 const int imagesize = 16; //fine on even numbers
 const int x = 20;
 const int y = 20;
-std::string Floor[x][y] = {
+/*std::string Floor[x][y] = {
                     {"W","W","W","W","W","W","W","W","W","W","W","S","W","W","W","W","W","W","W","W"},
                     {"W"," ","W"," "," "," "," "," "," "," ","W"," ","W"," "," "," ","W"," "," ","W"},
                     {"W"," "," "," ","W","W","W","W","W","W","W"," ","W"," ","W"," "," "," ","W","W"},
@@ -38,7 +39,7 @@ std::string Floor[x][y] = {
                     {"W"," "," "," "," "," "," "," "," "," "," "," "," "," ","W","W"," ","W"," ","W"},
                     {"W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"," "," ","W"," ","W"},
                     {"W"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ","W"},
-                    {"W","E","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"}};
+                    {"W","E","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"}};*/
 
 int P_x = 0; //player x
 int P_y = 11; //player y
@@ -49,6 +50,7 @@ Input input;
 //pixel Player_pixel;
 images Player_image;
 std::vector <images*> Objects;
+Floor fl;
 
 int screen_x;
 int screen_y;
@@ -194,6 +196,8 @@ int main()
 
     MSG messages;
 
+    fl = Floor("Assets/Floors/Floor1.txt");
+
     total_image_size = imagesize;
     //Player_pixel = pixel(colour(0, 0, 255), P_y * pixelsize, P_x * pixelsize, pixelsize);
     //Player_image = images(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2, colour(0, 0, 255), total_image_size);
@@ -203,19 +207,19 @@ int main()
     images* ny = { nullptr };
     for (int lx = 0; lx < screen_x; lx += total_image_size) {
         for (int ly = 0; ly < screen_y; ly += total_image_size) {
-            if (Floor[(ly) / (total_image_size)][(lx) / (total_image_size)] == "W") {
+            if (fl.readlocation((ly) / (total_image_size), (lx) / (total_image_size)) == 'W') {
                 //Objects.push_back(ny = new pixel(colour(0, 0, 0), lx, ly, pixelsize));
                 Objects.push_back(ny = new images("Assets/Images/Wall.bmp", lx + total_image_size / 2, ly + total_image_size / 2, total_image_size));
             }
-            if (Floor[(ly) / (total_image_size)][(lx) / (total_image_size)] == "E") {
+            if (fl.readlocation((ly) / (total_image_size), (lx) / (total_image_size)) == 'E') {
                 //Objects.push_back(ny = new pixel(colour(0, 255, 0), lx, ly, pixelsize));
                 Objects.push_back(ny = new images("Assets/Images/End.bmp", lx + total_image_size / 2, ly + total_image_size / 2, total_image_size));
             }
-            if (Floor[(ly) / (total_image_size)][(lx) / (total_image_size)] == "S") {
+            if (fl.readlocation((ly) / (total_image_size), (lx) / (total_image_size)) == 'S') {
                 //Objects.push_back(ny = new pixel(colour(255, 200, 0), lx, ly, pixelsize));
                 Objects.push_back(ny = new images("Assets/Images/Start.bmp", lx + total_image_size / 2, ly + total_image_size / 2, total_image_size));
             }
-            if (Floor[(ly) / (total_image_size)][(lx) / (total_image_size)] == " ") {
+            if (fl.readlocation((ly) / (total_image_size), (lx) / (total_image_size)) == ' ') {
                 //Objects.push_back(ny = new pixel(colour(255, 255, 255), lx, ly, pixelsize));
                 Objects.push_back(ny = new images("Assets/Images/Floor.bmp", lx + total_image_size / 2, ly + total_image_size / 2, total_image_size));
             }
@@ -233,22 +237,22 @@ int main()
 
         //Player_image.move(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2);
         if (input.A) {
-            if (Floor[P_x][P_y - 1] != "W") {
+            if (fl.readlocation(P_x, P_y - 1) != 'W') {
                 P_y--;
             }
         }
         if (input.D) {
-            if (Floor[P_x][P_y + 1] != "W") {
+            if (fl.readlocation(P_x, P_y + 1) != 'W') {
                 P_y++;
             }
         }
         if (input.W) {
-            if (Floor[P_x - 1][P_y] != "W" && Floor[P_x][P_y] != "S"){
+            if (fl.readlocation(P_x - 1, P_y) != 'W' && fl.readlocation(P_x, P_y) != 'S') {
                 P_x--;
             }
         }
         if (input.S) {
-            if (Floor[P_x + 1][P_y] != "W"){
+            if (fl.readlocation(P_x + 1, P_y) != 'W'){
                 P_x++;
             }
         }
@@ -259,7 +263,7 @@ int main()
         TranslateMessage(&messages);
         DispatchMessage(&messages);
 
-        if (Floor[P_x][P_y] == "E") {
+        if (fl.readlocation(P_x, P_y) == 'E') {
             DestroyWindow(windowHandle);
             run = false;
         }

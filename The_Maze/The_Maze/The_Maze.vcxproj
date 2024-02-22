@@ -132,6 +132,7 @@
     <ClCompile Include="Basic\colour.cpp" />
     <ClCompile Include="Basic\pixel.cpp" />
     <ClCompile Include="Basic\images.cpp" />
+    <ClCompile Include="Object_Classes\Floor.cpp" />
     <ClCompile Include="The_Maze.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +140,7 @@
     <ClInclude Include="Basic\Input.h" />
     <ClInclude Include="Basic\pixel.h" />
     <ClInclude Include="Basic\images.h" />
+    <ClInclude Include="Object_Classes\Floor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
