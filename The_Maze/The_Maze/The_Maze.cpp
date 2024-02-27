@@ -19,27 +19,6 @@
 const int imagesize = 16; //fine on even numbers
 const int x = 20;
 const int y = 20;
-/*std::string Floor[x][y] = {
-                    {"W","W","W","W","W","W","W","W","W","W","W","S","W","W","W","W","W","W","W","W"},
-                    {"W"," ","W"," "," "," "," "," "," "," ","W"," ","W"," "," "," ","W"," "," ","W"},
-                    {"W"," "," "," ","W","W","W","W","W","W","W"," ","W"," ","W"," "," "," ","W","W"},
-                    {"W"," ","W","W","W"," "," "," "," "," ","W"," ","W","W","W","W","W"," ","W","W"},
-                    {"W"," "," "," "," "," ","W"," ","W"," ","W"," "," "," "," "," "," "," "," ","W"},
-                    {"W"," ","W"," ","W"," ","W"," ","W"," ","W","W","W","W","W","W"," ","W"," ","W"},
-                    {"W"," ","W"," ","W"," ","W"," ","W"," ","W"," ","W"," "," "," "," ","W"," ","W"},
-                    {"W"," ","W"," ","W"," ","W"," ","W"," ","W"," ","W","W","W","W"," ","W"," ","W"},
-                    {"W"," ","W"," ","W"," ","W"," ","W"," "," "," ","W"," "," "," "," ","W"," ","W"},
-                    {"W"," ","W"," ","W"," ","W","W","W","W"," ","W","W","W","W","W"," ","W"," ","W"},
-                    {"W"," ","W"," ","W"," "," "," ","W"," "," "," "," "," "," "," "," ","W"," ","W"},
-                    {"W"," ","W"," ","W","W","W","W","W","W","W","W","W","W","W","W","W","W"," ","W"},
-                    {"W"," ","W"," ","W"," "," "," "," "," "," "," "," ","W"," "," "," ","W","W","W"},
-                    {"W"," ","W"," ","W","W","W","W","W","W","W","W"," ","W","W"," "," "," "," ","W"},
-                    {"W"," ","W"," ","W"," "," "," "," "," "," "," "," "," "," "," ","W","W","W","W"},
-                    {"W"," ","W","W","W"," ","W","W","W","W","W","W","W","W","W"," "," ","W"," ","W"},
-                    {"W"," "," "," "," "," "," "," "," "," "," "," "," "," ","W","W"," ","W"," ","W"},
-                    {"W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"," "," ","W"," ","W"},
-                    {"W"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ","W"},
-                    {"W","E","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"}};*/
 
 int P_x = 0; //player x
 int P_y = 11; //player y
@@ -63,36 +42,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
     {
     case WM_KEYDOWN:
         if (wparam == 0x41/*A key https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes */) {
-            /*if (Floor[P_x][P_y - 1] != "W")
-            {
-                P_y--;
-            }*/
             input.A = true;
         }
         if (wparam == 0x44/*D key*/) {
-            /*if (Floor[P_x][P_y + 1] != "W")
-            {
-                P_y++;
-            }*/
             input.D = true;
         }
         if (wparam == 0x53/*S key*/) {
-            /*if (Floor[P_x + 1][P_y] != "W")
-            {
-                P_x++;
-            }*/
             input.S = true;
         }
         if (wparam == 0x57/*W key*/) {
-            /*if (Floor[P_x - 1][P_y] != "W")
-            {
-                P_x--;
-            }*/
             input.W = true;
         }
-        //Player_pixel.move(P_y * pixelsize, P_x * pixelsize);
-        //Player_image.move(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2);
-        //SendMessage(hwnd, WM_PAINT, wparam, lparam);
         return 0L;
         break;
     case WM_KEYUP:
@@ -199,8 +159,6 @@ int main()
     fl = Floor("Assets/Floors/Floor1.txt");
 
     total_image_size = imagesize;
-    //Player_pixel = pixel(colour(0, 0, 255), P_y * pixelsize, P_x * pixelsize, pixelsize);
-    //Player_image = images(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2, colour(0, 0, 255), total_image_size);
     Player_image = images("Assets/Images/Player.bmp", P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2, total_image_size);
     Player_image.layer = 1;
 
@@ -208,19 +166,15 @@ int main()
     for (int lx = 0; lx < screen_x; lx += total_image_size) {
         for (int ly = 0; ly < screen_y; ly += total_image_size) {
             if (fl.readlocation((ly) / (total_image_size), (lx) / (total_image_size)) == 'W') {
-                //Objects.push_back(ny = new pixel(colour(0, 0, 0), lx, ly, pixelsize));
                 Objects.push_back(ny = new images("Assets/Images/Wall.bmp", lx + total_image_size / 2, ly + total_image_size / 2, total_image_size));
             }
             if (fl.readlocation((ly) / (total_image_size), (lx) / (total_image_size)) == 'E') {
-                //Objects.push_back(ny = new pixel(colour(0, 255, 0), lx, ly, pixelsize));
                 Objects.push_back(ny = new images("Assets/Images/End.bmp", lx + total_image_size / 2, ly + total_image_size / 2, total_image_size));
             }
             if (fl.readlocation((ly) / (total_image_size), (lx) / (total_image_size)) == 'S') {
-                //Objects.push_back(ny = new pixel(colour(255, 200, 0), lx, ly, pixelsize));
                 Objects.push_back(ny = new images("Assets/Images/Start.bmp", lx + total_image_size / 2, ly + total_image_size / 2, total_image_size));
             }
             if (fl.readlocation((ly) / (total_image_size), (lx) / (total_image_size)) == ' ') {
-                //Objects.push_back(ny = new pixel(colour(255, 255, 255), lx, ly, pixelsize));
                 Objects.push_back(ny = new images("Assets/Images/Floor.bmp", lx + total_image_size / 2, ly + total_image_size / 2, total_image_size));
             }
         }
@@ -235,7 +189,6 @@ int main()
         TranslateMessage(&messages);
         DispatchMessage(&messages);
 
-        //Player_image.move(P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2);
         if (input.A) {
             if (fl.readlocation(P_x, P_y - 1) != 'W') {
                 P_y--;
