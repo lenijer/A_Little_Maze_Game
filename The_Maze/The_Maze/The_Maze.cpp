@@ -29,7 +29,7 @@ Input input;
 //pixel Player_pixel;
 images Player_image;
 std::vector <images*> Objects;
-Floor fl;
+//Floor fl;
 
 int screen_x;
 int screen_y;
@@ -156,7 +156,7 @@ int main()
 
     MSG messages;
 
-    fl = Floor("Assets/Floors/Floor1.txt");
+    Floor fl = Floor("Assets/Floors/Floor1.txt");
 
     total_image_size = imagesize;
     Player_image = images("Assets/Images/Player.bmp", P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2, total_image_size);
