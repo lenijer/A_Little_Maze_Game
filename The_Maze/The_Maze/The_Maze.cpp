@@ -8,6 +8,7 @@
 #include <string>
 #include <Windows.h>
 #include <vector>
+#include <codecvt>
 
 //Selfmade classes
 #include "Basic/colour.h"
@@ -29,15 +30,30 @@ Input input;
 //pixel Player_pixel;
 images Player_image;
 std::vector <images*> Objects;
-Floor fl;
+//Floor fl;
 
 int screen_x;
 int screen_y;
 int total_image_size;
 int game_timer{ 0 };
 bool run{ true };
+//std::string TextOutput_S = "Hello there";
+std::wstring TextOutput_WS = L"Hello there\nGeneral Kenobi";
+//LPCWSTR TextOutput_LPC = L"Hello There\nGeneral Kenobi";
+//TCHAR TextOutput_Tchr[] = "Hello there";
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+    //https://stackoverflow.com/questions/27220/how-to-convert-stdstring-to-lpcwstr-in-c-unicode
+    //std::string s = "Hi";
+    /*std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    std::wstring wide = converter.from_bytes(TextOutput_S);
+    LPCWSTR result = wide.c_str();*/
+    //https://stackoverflow.com/questions/22050749/c-winapi-textout-update-text
+    //TCHAR text[256];
+    //swprintf_s(text, 256, L"%s", TextOutput_S);
+    LPCWSTR Out = L"";
+    std::wstring help = L"";
+    int line{ 0 };
     switch (message)
     {
     case WM_KEYDOWN:
@@ -77,8 +93,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
         PAINTSTRUCT ps;
         ps.fErase = true;
         BeginPaint(hwnd, &ps);
-        
-        //TextOut(hdc, 0, 0, "Hello, Windows!", 15);
+
         for (int i = 0; i < Objects.size(); i++ /*int i = Objects.size() - 1; i > 0; i--*/) {
             if (Player_image.get_x() == Objects[i]->get_x() && Player_image.get_y() == Objects[i]->get_y()) {
                 if (Player_image.HasTransparentPixels()) {
@@ -111,6 +126,18 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
                 Objects[i]->draw(someHDC);
             }
         }
+        for (int i = 0; i < TextOutput_WS.length(); i++) {
+            help += TextOutput_WS[i];
+            if (TextOutput_WS[i] == '\n') {
+                Out = help.c_str();
+                TextOut(someHDC, screen_x, line, Out, wcslen(Out));
+                line += 16;
+                help = L"";
+            }
+        }
+        Out = help.c_str();
+        TextOut(someHDC, screen_x, line, Out, wcslen(Out));
+        //TextOut(someHDC, screen_x, 0, text, wcslen(text));
         EndPaint(hwnd, &ps);
         return 0L;
         break; 
@@ -148,7 +175,7 @@ int main()
 
     screen_x = imagesize * x;
     screen_y = imagesize * y;
-    HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_POPUP/*Don't Allow size change*/, (GetSystemMetrics(SM_CXSCREEN) / 2) - (screen_x / 2), (GetSystemMetrics(SM_CYSCREEN) / 2) - (screen_y / 2), screen_x, screen_y, NULL, NULL, NULL, NULL);
+    HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_POPUP/*Don't Allow size change*/, (GetSystemMetrics(SM_CXSCREEN) / 2) - (screen_x / 2) + 150/2, (GetSystemMetrics(SM_CYSCREEN) / 2) - (screen_y / 2), screen_x + 150, screen_y, NULL, NULL, NULL, NULL);
     //HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_OVERLAPPEDWINDOW/*allow size change*//*, (GetSystemMetrics(SM_CXSCREEN) / 2) - (x * 10 / 2), (GetSystemMetrics(SM_CYSCREEN) / 2) - (y * 10 / 2), x * 10 + 100, y * 10 + 100, NULL, NULL, NULL, NULL);*/
     ShowWindow(windowHandle, SW_RESTORE);
 
@@ -156,7 +183,7 @@ int main()
 
     MSG messages;
 
-    fl = Floor("Assets/Floors/Floor1.txt");
+    Floor fl = Floor("Assets/Floors/Floor1.txt");
 
     total_image_size = imagesize;
     Player_image = images("Assets/Images/Player.bmp", P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2, total_image_size);
@@ -189,24 +216,34 @@ int main()
         TranslateMessage(&messages);
         DispatchMessage(&messages);
 
+        TextOutput_WS = L"Hello There\nGeneral Kenobi";
+
         if (input.A) {
             if (fl.readlocation(P_x, P_y - 1) != 'W') {
                 P_y--;
+                //TextOutput_S = "A";
+                TextOutput_WS += L"\nA";
             }
         }
         if (input.D) {
             if (fl.readlocation(P_x, P_y + 1) != 'W') {
                 P_y++;
+                //TextOutput_S = "D";
+                TextOutput_WS += L"\nD";
             }
         }
         if (input.W) {
             if (fl.readlocation(P_x - 1, P_y) != 'W' && fl.readlocation(P_x, P_y) != 'S') {
                 P_x--;
+                //TextOutput_S = "W";
+                TextOutput_WS += L"\nW";
             }
         }
         if (input.S) {
             if (fl.readlocation(P_x + 1, P_y) != 'W'){
                 P_x++;
+                //TextOutput_S = "S";
+                TextOutput_WS += L"\nS";
             }
         }
         Player_image.move(P_y* total_image_size + total_image_size / 2, P_x* total_image_size + total_image_size / 2);
