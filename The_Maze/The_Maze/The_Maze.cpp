@@ -17,8 +17,6 @@
 #include "Object_Classes/Floor.h"
 
 const int imagesize = 16; //fine on even numbers
-//const int x = 20;
-//const int y = 20;
 
 int P_x = 0; //player x
 int P_y = 11; //player y
@@ -34,7 +32,7 @@ int screen_y;
 int total_image_size;
 int game_timer{ 0 };
 bool run{ true };
-bool fullscreen{ true };
+bool fullscreen{ false };
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
     switch (message)
@@ -146,8 +144,6 @@ int main()
     }
 
     Floor fl = Floor("Assets/Floors/Floor1.txt");
-    //screen_x = imagesize * fl.x();
-    //screen_y = imagesize * fl.y();
 
     if (fullscreen) {
         screen_x = GetSystemMetrics(SM_CXSCREEN); //Gets the computers screen dimentions for X
