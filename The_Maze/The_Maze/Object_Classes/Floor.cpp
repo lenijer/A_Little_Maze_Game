@@ -1,7 +1,7 @@
 /*
 *       Made by: Lenita Njærheim
 *           Created On: 22/02-2024
-*           Completed: 
+*           Completed: 29/02-2024
 *       Project Name: The Maze
 */
 #include "Floor.h"

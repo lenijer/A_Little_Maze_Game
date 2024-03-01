@@ -1,12 +1,13 @@
 /*
 *       Made by: Lenita Njærheim
 *           Created On: 22/02-2024
-*           Completed: 
+*           Completed: 29/02-2024
 *       Project Name: The Maze
 */
 #pragma once
 #include <string>
 #include <vector>
+
 class Floor
 {
 public:
@@ -15,9 +16,11 @@ public:
 	Floor(std::string file);
 	~Floor() { };
 
+	const int x() { return f[0].length(); }
+	const int y() { return f.size(); }
+
 	char readlocation(int x, int y) { return f[x][y]; }
 private:
-	int dim[2];
 	std::vector <std::string> f;
 	std::string Name{""};
 };
