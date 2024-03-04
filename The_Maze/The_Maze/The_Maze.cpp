@@ -15,6 +15,7 @@
 #include "Basic/images.h"
 #include "Basic/Input.h"
 #include "Object_Classes/Floor.h"
+#include "Object_Classes/Object.h"
 
 const int imagesize = 16; //fine on even numbers
 
@@ -24,8 +25,8 @@ int P_y = 11; //player y
 HDC someHDC;
 Input input;
 
-images Player_image;
-std::vector <images*> Objects;
+Object Player_image;
+std::vector <Object*> Objects;
 
 int screen_x;
 int screen_y;
@@ -77,35 +78,35 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
         
         //TextOut(hdc, 0, 0, "Hello, Windows!", 15);
         for (int i = 0; i < Objects.size(); i++ /*int i = Objects.size() - 1; i > 0; i--*/) {
-            if (Player_image.get_x() == Objects[i]->get_x() && Player_image.get_y() == Objects[i]->get_y()) {
-                if (Player_image.HasTransparentPixels()) {
+            if (Player_image.x() == Objects[i]->x() && Player_image.y() == Objects[i]->y()) {
+                if (Player_image.image()->HasTransparentPixels()) {
                     int r1, g1, b1, r2, b2, g2, a; 
                     float r, g, b;
-                    for (int j = 0; j < Player_image.Vector_Length(); j++) {
-                        r1 = Player_image.GetPixel(j).GetColour().GetRed();
-                        g1 = Player_image.GetPixel(j).GetColour().GetGreen();
-                        b1 = Player_image.GetPixel(j).GetColour().GetBlue();
-                        a = Player_image.GetPixel(j).GetColour().GetAlpha();
+                    for (int j = 0; j < Player_image.image()->Vector_Length(); j++) {
+                        r1 = Player_image.image()->GetPixel(j).GetColour().GetRed();
+                        g1 = Player_image.image()->GetPixel(j).GetColour().GetGreen();
+                        b1 = Player_image.image()->GetPixel(j).GetColour().GetBlue();
+                        a = Player_image.image()->GetPixel(j).GetColour().GetAlpha();
 
-                        r2 = Objects[i]->GetPixel(Player_image.GetPixel(j).get_x(), Player_image.GetPixel(j).get_y()).GetColour().GetRed();
-                        g2 = Objects[i]->GetPixel(Player_image.GetPixel(j).get_x(), Player_image.GetPixel(j).get_y()).GetColour().GetGreen();
-                        b2 = Objects[i]->GetPixel(Player_image.GetPixel(j).get_x(), Player_image.GetPixel(j).get_y()).GetColour().GetBlue();
+                        r2 = Objects[i]->image()->GetPixel(Player_image.image()->GetPixel(j).get_x(), Player_image.image()->GetPixel(j).get_y()).GetColour().GetRed();
+                        g2 = Objects[i]->image()->GetPixel(Player_image.image()->GetPixel(j).get_x(), Player_image.image()->GetPixel(j).get_y()).GetColour().GetGreen();
+                        b2 = Objects[i]->image()->GetPixel(Player_image.image()->GetPixel(j).get_x(), Player_image.image()->GetPixel(j).get_y()).GetColour().GetBlue();
 
                         r = r1 * ((float)a / 255) + r2 * ((255 - (float)a) / 255);
                         g = g1 * ((float)a / 255) + g2 * ((255 - (float)a) / 255);
                         b = b1 * ((float)a / 255) + b2 * ((255 - (float)a) / 255);
 
                         colour c = colour((int)r, (int)g, (int)b, 255);
-                        pixel p = pixel(c, Player_image.GetPixel(j).get_x(), Player_image.GetPixel(j).get_y());
+                        pixel p = pixel(c, Player_image.image()->GetPixel(j).get_x(), Player_image.image()->GetPixel(j).get_y());
                         p.drawpixel(someHDC);
                     }
                 }
                 else {
-                    Player_image.draw(someHDC);
+                    Player_image.image()->draw(someHDC);
                 }
             }
             else {
-                Objects[i]->draw(someHDC);
+                Objects[i]->image()->draw(someHDC);
             }
         }
         EndPaint(hwnd, &ps);
@@ -125,6 +126,40 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
         break;
     }
     return 0L;
+}
+
+void Collision() {
+    int movement_change_x = Player_image.x();
+    int movement_change_y = Player_image.y();
+    bool hit{ false };
+    if (input.A) {
+        movement_change_x -= total_image_size;
+    }
+    if (input.D) {
+        movement_change_x += total_image_size;
+    }
+    if (input.W) {
+        movement_change_y -= total_image_size;
+    }
+    if (input.S) {
+        movement_change_y += total_image_size;
+    }
+    //check for collision
+    for (int i = 0; i < Objects.size(); i++) {
+        if (Objects[i]->collideableobject) {
+            std::string h = "Hello There";
+            if ((Objects[i]->right_collider() > movement_change_x && Objects[i]->left_collider() < movement_change_x) &&
+                (Objects[i]->bottom_collider() > movement_change_y && Objects[i]->top_collider() < movement_change_y)) {
+                std::string h1 = "General Kenobi";
+                hit = true;
+                break;
+            }
+        }
+    }
+    //Collision Event
+    if (!hit) {
+        Player_image.move(movement_change_x, movement_change_y);
+    }
 }
 
 int main()
@@ -163,32 +198,35 @@ int main()
     MSG messages;
 
     total_image_size = imagesize;
-    Player_image = images("Assets/Images/Player.bmp", (P_y * total_image_size) + (total_image_size / 2), (P_x * total_image_size) + (total_image_size / 2), total_image_size);
-    Player_image.layer = 1;
+    Player_image = Object(new images("Assets/Images/Player.bmp", (P_y * total_image_size) + (total_image_size / 2), (P_x * total_image_size) + (total_image_size / 2), total_image_size), (P_y * total_image_size) + (total_image_size / 2), (P_x * total_image_size) + (total_image_size / 2));
+    //Player_image.layer = 1;
 
-    images* ny = { nullptr };
+    Object* ny = { nullptr };
     int x = total_image_size / 2;
     int y = total_image_size / 2;
     for (int i = 0; i < fl.x(); i++) {
         for (int j = 0; j < fl.y(); j++) {
             if (fl.readlocation(i, j) == 'W') {
-                Objects.push_back(ny = new images("Assets/Images/Wall.bmp", x, y, total_image_size));
+                Objects.push_back(ny = new Object(new images("Assets/Images/Wall.bmp", x, y, total_image_size), x, y));
+                ny->Name = "Wall";
+                ny->collideableobject = true;
             }
             if (fl.readlocation(i, j) == 'E') {
-                Objects.push_back(ny = new images("Assets/Images/End.bmp", x, y, total_image_size));
+                Objects.push_back(ny = new Object(new images("Assets/Images/End.bmp", x, y, total_image_size), x, y));
             }
             if (fl.readlocation(i, j) == 'S') {
-                Objects.push_back(ny = new images("Assets/Images/Start.bmp", x, y, total_image_size));
+                Objects.push_back(ny = new Object(new images("Assets/Images/Start.bmp", x, y, total_image_size), x, y));
+                ny->collideableobject = true;
             }
             if (fl.readlocation(i, j) == ' ') {
-                Objects.push_back(ny = new images("Assets/Images/Floor.bmp", x, y, total_image_size));
+                Objects.push_back(ny = new Object(new images("Assets/Images/Floor.bmp", x, y, total_image_size), x, y));
             }
             x += total_image_size;
         }
         x = total_image_size / 2;
         y += total_image_size;
     }
-    ny = new images();
+    ny = new Object();
     delete ny;
 
     while (run) {
@@ -198,27 +236,8 @@ int main()
         TranslateMessage(&messages);
         DispatchMessage(&messages);
 
-        if (input.A) {
-            if (fl.readlocation(P_x, P_y - 1) != 'W') {
-                P_y--;
-            }
-        }
-        if (input.D) {
-            if (fl.readlocation(P_x, P_y + 1) != 'W') {
-                P_y++;
-            }
-        }
-        if (input.W) {
-            if (fl.readlocation(P_x - 1, P_y) != 'W' && fl.readlocation(P_x, P_y) != 'S') {
-                P_x--;
-            }
-        }
-        if (input.S) {
-            if (fl.readlocation(P_x + 1, P_y) != 'W'){
-                P_x++;
-            }
-        }
-        Player_image.move(P_y* total_image_size + total_image_size / 2, P_x* total_image_size + total_image_size / 2);
+        Collision();
+
         RedrawWindow(windowHandle, NULL, NULL, RDW_INVALIDATE);
         GetMessage(&messages, NULL, 0, 0);
 
