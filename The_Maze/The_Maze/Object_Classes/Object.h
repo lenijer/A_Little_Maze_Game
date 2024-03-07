@@ -17,6 +17,7 @@ public:
 
 	std::string Name; //should this be private?
 	bool collideableobject{ false };
+	int layer{ 0 };
 
 	const int x() { return Loc[0]; }
 	const int y() { return Loc[1]; }

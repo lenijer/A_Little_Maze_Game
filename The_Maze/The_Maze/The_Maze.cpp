@@ -217,7 +217,6 @@ int main()
 
     total_image_size = imagesize;
     Player_image = Object(Image[0], (P_y * total_image_size) + (total_image_size / 2), (P_x * total_image_size) + (total_image_size / 2));
-    //Player_image.layer = 1;
 
     Object* ny = { nullptr };
     int x = total_image_size / 2;
