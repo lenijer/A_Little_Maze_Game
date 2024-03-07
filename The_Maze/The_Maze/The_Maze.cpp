@@ -27,6 +27,7 @@ Input input;
 
 Object Player_image;
 std::vector <Object*> Objects;
+std::vector <images*> Image;
 
 int screen_x;
 int screen_y;
@@ -34,6 +35,7 @@ int total_image_size;
 int game_timer{ 0 };
 bool run{ true };
 bool fullscreen{ false };
+bool redraw_nessesary{ false };
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
     switch (message)
@@ -97,19 +99,25 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
                         b = b1 * ((float)a / 255) + b2 * ((255 - (float)a) / 255);
 
                         colour c = colour((int)r, (int)g, (int)b, 255);
-                        pixel p = pixel(c, Player_image.image()->GetPixel(j).get_x(), Player_image.image()->GetPixel(j).get_y());
+                        pixel p = pixel(c, Player_image.image()->GetPixel(j).get_x() + Player_image.left_collider(), Player_image.image()->GetPixel(j).get_y() + Player_image.top_collider());
                         p.drawpixel(someHDC);
                     }
                 }
                 else {
-                    Player_image.image()->draw(someHDC);
+                    Player_image.image()->draw_on_location(someHDC, Player_image.x(), Player_image.y());
                 }
             }
             else {
-                Objects[i]->image()->draw(someHDC);
+                //if (Objects[i]->Name == "Wall") {
+                Objects[i]->image()->draw_on_location(someHDC, Objects[i]->x(), Objects[i]->y());
+                //}
+                //else {
+                    //Objects[i]->image()->draw(someHDC);
+                //}
             }
         }
         EndPaint(hwnd, &ps);
+        redraw_nessesary = false;
         return 0L;
         break; 
     case WM_CHAR:
@@ -159,6 +167,7 @@ void Collision() {
     //Collision Event
     if (!hit) {
         Player_image.move(movement_change_x, movement_change_y);
+        redraw_nessesary = true;
     }
 }
 
@@ -197,8 +206,17 @@ int main()
 
     MSG messages;
 
+    images* im = { nullptr };
+    Image.push_back(im = new images("Assets/Images/Player.bmp"));
+    Image.push_back(im = new images("Assets/Images/End.bmp"));
+    Image.push_back(im = new images("Assets/Images/Start.bmp"));
+    Image.push_back(im = new images("Assets/Images/Floor.bmp"));
+    Image.push_back(im = new images("Assets/Images/Wall.bmp"));
+    im = new images();
+    delete im;
+
     total_image_size = imagesize;
-    Player_image = Object(new images("Assets/Images/Player.bmp", (P_y * total_image_size) + (total_image_size / 2), (P_x * total_image_size) + (total_image_size / 2), total_image_size), (P_y * total_image_size) + (total_image_size / 2), (P_x * total_image_size) + (total_image_size / 2));
+    Player_image = Object(Image[0], (P_y * total_image_size) + (total_image_size / 2), (P_x * total_image_size) + (total_image_size / 2));
     //Player_image.layer = 1;
 
     Object* ny = { nullptr };
@@ -207,19 +225,20 @@ int main()
     for (int i = 0; i < fl.x(); i++) {
         for (int j = 0; j < fl.y(); j++) {
             if (fl.readlocation(i, j) == 'W') {
-                Objects.push_back(ny = new Object(new images("Assets/Images/Wall.bmp", x, y, total_image_size), x, y));
+                //Objects.push_back(ny = new Object(new images("Assets/Images/Wall.bmp", x, y, total_image_size), x, y));
+                Objects.push_back(ny = new Object(Image[4], x, y));
                 ny->Name = "Wall";
                 ny->collideableobject = true;
             }
             if (fl.readlocation(i, j) == 'E') {
-                Objects.push_back(ny = new Object(new images("Assets/Images/End.bmp", x, y, total_image_size), x, y));
+                Objects.push_back(ny = new Object(Image[1], x, y));
             }
             if (fl.readlocation(i, j) == 'S') {
-                Objects.push_back(ny = new Object(new images("Assets/Images/Start.bmp", x, y, total_image_size), x, y));
+                Objects.push_back(ny = new Object(Image[2], x, y));
                 ny->collideableobject = true;
             }
             if (fl.readlocation(i, j) == ' ') {
-                Objects.push_back(ny = new Object(new images("Assets/Images/Floor.bmp", x, y, total_image_size), x, y));
+                Objects.push_back(ny = new Object(Image[3], x, y));
             }
             x += total_image_size;
         }
@@ -238,11 +257,14 @@ int main()
 
         Collision();
 
-        RedrawWindow(windowHandle, NULL, NULL, RDW_INVALIDATE);
-        GetMessage(&messages, NULL, 0, 0);
+        if (redraw_nessesary)
+        {
+            RedrawWindow(windowHandle, NULL, NULL, RDW_INVALIDATE);
+            GetMessage(&messages, NULL, 0, 0);
 
-        TranslateMessage(&messages);
-        DispatchMessage(&messages);
+            TranslateMessage(&messages);
+            DispatchMessage(&messages);
+        }
 
         if (fl.readlocation(P_x, P_y) == 'E') {
             DestroyWindow(windowHandle);
