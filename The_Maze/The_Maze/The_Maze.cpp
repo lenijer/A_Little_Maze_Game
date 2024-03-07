@@ -37,6 +37,41 @@ bool run{ true };
 bool fullscreen{ false };
 bool redraw_nessesary{ false };
 
+void Draw() {
+    for (int i = 0; i < Objects.size(); i++) {
+        if (Player_image.x() == Objects[i]->x() && Player_image.y() == Objects[i]->y()) {
+            if (Player_image.image()->HasTransparentPixels()) {
+                int r1, g1, b1, r2, b2, g2, a;
+                float r, g, b;
+                for (int j = 0; j < Player_image.image()->Vector_Length(); j++) {
+                    r1 = Player_image.image()->GetPixel(j).GetColour().GetRed();
+                    g1 = Player_image.image()->GetPixel(j).GetColour().GetGreen();
+                    b1 = Player_image.image()->GetPixel(j).GetColour().GetBlue();
+                    a = Player_image.image()->GetPixel(j).GetColour().GetAlpha();
+
+                    r2 = Objects[i]->image()->GetPixel(Player_image.image()->GetPixel(j).get_x(), Player_image.image()->GetPixel(j).get_y()).GetColour().GetRed();
+                    g2 = Objects[i]->image()->GetPixel(Player_image.image()->GetPixel(j).get_x(), Player_image.image()->GetPixel(j).get_y()).GetColour().GetGreen();
+                    b2 = Objects[i]->image()->GetPixel(Player_image.image()->GetPixel(j).get_x(), Player_image.image()->GetPixel(j).get_y()).GetColour().GetBlue();
+
+                    r = r1 * ((float)a / 255) + r2 * ((255 - (float)a) / 255);
+                    g = g1 * ((float)a / 255) + g2 * ((255 - (float)a) / 255);
+                    b = b1 * ((float)a / 255) + b2 * ((255 - (float)a) / 255);
+
+                    colour c = colour((int)r, (int)g, (int)b, 255);
+                    pixel p = pixel(c, Player_image.image()->GetPixel(j).get_x() + Player_image.left_collider(), Player_image.image()->GetPixel(j).get_y() + Player_image.top_collider());
+                    p.drawpixel(someHDC);
+                }
+            }
+            else {
+                Player_image.image()->draw_on_location(someHDC, Player_image.x(), Player_image.y());
+            }
+        }
+        else {
+            Objects[i]->image()->draw_on_location(someHDC, Objects[i]->x(), Objects[i]->y());
+        }
+    }
+}
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
     switch (message)
     {
@@ -79,43 +114,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
         BeginPaint(hwnd, &ps);
         
         //TextOut(hdc, 0, 0, "Hello, Windows!", 15);
-        for (int i = 0; i < Objects.size(); i++ /*int i = Objects.size() - 1; i > 0; i--*/) {
-            if (Player_image.x() == Objects[i]->x() && Player_image.y() == Objects[i]->y()) {
-                if (Player_image.image()->HasTransparentPixels()) {
-                    int r1, g1, b1, r2, b2, g2, a; 
-                    float r, g, b;
-                    for (int j = 0; j < Player_image.image()->Vector_Length(); j++) {
-                        r1 = Player_image.image()->GetPixel(j).GetColour().GetRed();
-                        g1 = Player_image.image()->GetPixel(j).GetColour().GetGreen();
-                        b1 = Player_image.image()->GetPixel(j).GetColour().GetBlue();
-                        a = Player_image.image()->GetPixel(j).GetColour().GetAlpha();
+        Draw();
 
-                        r2 = Objects[i]->image()->GetPixel(Player_image.image()->GetPixel(j).get_x(), Player_image.image()->GetPixel(j).get_y()).GetColour().GetRed();
-                        g2 = Objects[i]->image()->GetPixel(Player_image.image()->GetPixel(j).get_x(), Player_image.image()->GetPixel(j).get_y()).GetColour().GetGreen();
-                        b2 = Objects[i]->image()->GetPixel(Player_image.image()->GetPixel(j).get_x(), Player_image.image()->GetPixel(j).get_y()).GetColour().GetBlue();
-
-                        r = r1 * ((float)a / 255) + r2 * ((255 - (float)a) / 255);
-                        g = g1 * ((float)a / 255) + g2 * ((255 - (float)a) / 255);
-                        b = b1 * ((float)a / 255) + b2 * ((255 - (float)a) / 255);
-
-                        colour c = colour((int)r, (int)g, (int)b, 255);
-                        pixel p = pixel(c, Player_image.image()->GetPixel(j).get_x() + Player_image.left_collider(), Player_image.image()->GetPixel(j).get_y() + Player_image.top_collider());
-                        p.drawpixel(someHDC);
-                    }
-                }
-                else {
-                    Player_image.image()->draw_on_location(someHDC, Player_image.x(), Player_image.y());
-                }
-            }
-            else {
-                //if (Objects[i]->Name == "Wall") {
-                Objects[i]->image()->draw_on_location(someHDC, Objects[i]->x(), Objects[i]->y());
-                //}
-                //else {
-                    //Objects[i]->image()->draw(someHDC);
-                //}
-            }
-        }
         EndPaint(hwnd, &ps);
         redraw_nessesary = false;
         return 0L;
