@@ -25,7 +25,7 @@ int P_y = 11; //player y
 HDC someHDC;
 Input input;
 
-Object Player_image;
+//Object Player_image;
 std::vector <Object*> Objects;
 std::vector <images*> Image;
 
@@ -33,12 +33,128 @@ int screen_x;
 int screen_y;
 int total_image_size;
 int game_timer{ 0 };
+//int top_layer{ 1 };
 bool run{ true };
 bool fullscreen{ false };
 bool redraw_nessesary{ false };
 
+images* blend_images(images* i1, images* i2) {
+    //image* n_img;
+    std::vector <pixel*> pix_arr;
+    int r1, g1, b1, r2, b2, g2, a;
+    float r, g, b;
+    for (int k = 0; k < i1->Vector_Length(); k++) {
+        r1 = i1->GetPixel(k).GetColour().GetRed();
+        g1 = i1->GetPixel(k).GetColour().GetGreen();
+        b1 = i1->GetPixel(k).GetColour().GetBlue();
+        a = i1->GetPixel(k).GetColour().GetAlpha();
+
+        r2 = i2->GetPixel(i1->GetPixel(k).get_x(), i1->GetPixel(k).get_y()).GetColour().GetRed();
+        g2 = i2->GetPixel(i1->GetPixel(k).get_x(), i1->GetPixel(k).get_y()).GetColour().GetGreen();
+        b2 = i2->GetPixel(i1->GetPixel(k).get_x(), i1->GetPixel(k).get_y()).GetColour().GetBlue();
+
+        r = r1 * ((float)a / 255) + r2 * ((255 - (float)a) / 255);
+        g = g1 * ((float)a / 255) + g2 * ((255 - (float)a) / 255);
+        b = b1 * ((float)a / 255) + b2 * ((255 - (float)a) / 255);
+
+        colour c = colour((int)r, (int)g, (int)b, 255);
+        pixel* p = new pixel(c, i1->GetPixel(k).get_x(), i1->GetPixel(k).get_y());
+        //p.drawpixel(someHDC);
+        pix_arr.push_back(p);
+    }
+    //tmp_img.push_back(n_img = new images(pix_arr));
+    return new images(pix_arr);
+}
+
 void Draw() {
+    Object* tmp;
+    std::vector <Object*> O;
+    bool weird = false;
+    //std::vector <images*> tmp_img;
+
     for (int i = 0; i < Objects.size(); i++) {
+        tmp = Objects[i];
+        if (O.size() > 0) {
+            for (int j = 0; j < O.size(); j++) {
+                if (tmp->x() == O[j]->x() && tmp->y() == O[j]->y()) {
+                    weird = true;
+                    if (tmp->layer > O[j]->layer) {
+                        if (tmp->image()->HasTransparentPixels()) {
+                            /*//image* n_img;
+                            std::vector <pixel*> pix_arr;
+                            int r1, g1, b1, r2, b2, g2, a;
+                            float r, g, b;
+                            for (int k = 0; k < tmp->image()->Vector_Length(); k++) {
+                                r1 = tmp->image()->GetPixel(k).GetColour().GetRed();
+                                g1 = tmp->image()->GetPixel(k).GetColour().GetGreen();
+                                b1 = tmp->image()->GetPixel(k).GetColour().GetBlue();
+                                a = tmp->image()->GetPixel(k).GetColour().GetAlpha();
+
+                                r2 = O[j]->image()->GetPixel(tmp->image()->GetPixel(k).get_x(), tmp->image()->GetPixel(k).get_y()).GetColour().GetRed();
+                                g2 = O[j]->image()->GetPixel(tmp->image()->GetPixel(k).get_x(), tmp->image()->GetPixel(k).get_y()).GetColour().GetGreen();
+                                b2 = O[j]->image()->GetPixel(tmp->image()->GetPixel(k).get_x(), tmp->image()->GetPixel(k).get_y()).GetColour().GetBlue();
+
+                                r = r1 * ((float)a / 255) + r2 * ((255 - (float)a) / 255);
+                                g = g1 * ((float)a / 255) + g2 * ((255 - (float)a) / 255);
+                                b = b1 * ((float)a / 255) + b2 * ((255 - (float)a) / 255);
+
+                                colour c = colour((int)r, (int)g, (int)b, 255);
+                                pixel p = pixel(c, tmp->image()->GetPixel(k).get_x(), tmp->image()->GetPixel(k).get_y());
+                                //p.drawpixel(someHDC);
+                                pix_arr.push_back(&p);
+                            }
+                            //tmp_img.push_back(n_img = new images(pix_arr));
+                            tmp->add_temp_image(new images(pix_arr));*/
+                            tmp->add_temp_image(blend_images(tmp->image(), O[j]->image()));
+                        }
+                        O[j] = tmp;
+                    }
+                    else
+                    {
+                        if (O[j]->image()->HasTransparentPixels()) {
+                            O[j]->add_temp_image(blend_images(O[j]->image(), tmp->image()));
+                            /*//image* n_img;
+                            std::vector <pixel*> pix_arr;
+                            int r1, g1, b1, r2, b2, g2, a;
+                            float r, g, b;
+                            for (int k = 0; k < O[j]->image()->Vector_Length(); k++) {
+                                r1 = O[j]->image()->GetPixel(k).GetColour().GetRed();
+                                g1 = O[j]->image()->GetPixel(k).GetColour().GetGreen();
+                                b1 = O[j]->image()->GetPixel(k).GetColour().GetBlue();
+                                a = O[j]->image()->GetPixel(k).GetColour().GetAlpha();
+
+                                r2 = tmp->image()->GetPixel(O[j]->image()->GetPixel(k).get_x(), O[j]->image()->GetPixel(k).get_y()).GetColour().GetRed();
+                                g2 = tmp->image()->GetPixel(O[j]->image()->GetPixel(k).get_x(), O[j]->image()->GetPixel(k).get_y()).GetColour().GetGreen();
+                                b2 = tmp->image()->GetPixel(O[j]->image()->GetPixel(k).get_x(), O[j]->image()->GetPixel(k).get_y()).GetColour().GetBlue();
+
+                                r = r1 * ((float)a / 255) + r2 * ((255 - (float)a) / 255);
+                                g = g1 * ((float)a / 255) + g2 * ((255 - (float)a) / 255);
+                                b = b1 * ((float)a / 255) + b2 * ((255 - (float)a) / 255);
+
+                                colour c = colour((int)r, (int)g, (int)b, 255);
+                                pixel p = pixel(c, O[j]->image()->GetPixel(k).get_x(), O[j]->image()->GetPixel(k).get_y());
+                                //p.drawpixel(someHDC);
+                                pix_arr.push_back(&p);
+                            }
+                            //tmp_img.push_back(n_img = new images(pix_arr));
+                            O[j]->add_temp_image(new images(pix_arr));/**/
+                        }
+                    }
+                }
+            }
+        }
+        if (!weird) {
+            O.push_back(tmp);
+        }
+        weird = false;
+    }
+    for (int i = 0; i < O.size(); i++) {
+        O[i]->draw_Object(someHDC);
+        //O[i]->image()->draw_on_location(someHDC, O[i]->x(), O[i]->y());
+    }
+
+
+    /*for (int i = 0; i < Objects.size(); i++) {
         if (Player_image.x() == Objects[i]->x() && Player_image.y() == Objects[i]->y()) {
             if (Player_image.image()->HasTransparentPixels()) {
                 int r1, g1, b1, r2, b2, g2, a;
@@ -69,7 +185,7 @@ void Draw() {
         else {
             Objects[i]->image()->draw_on_location(someHDC, Objects[i]->x(), Objects[i]->y());
         }
-    }
+    }/**/
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
@@ -137,8 +253,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
 }
 
 void Collision() {
-    int movement_change_x = Player_image.x();
-    int movement_change_y = Player_image.y();
+    int movement_change_x = Objects[0]->x(); //Object[0] is the player
+    int movement_change_y = Objects[0]->y();
     bool hit{ false };
     if (input.A) {
         movement_change_x -= total_image_size;
@@ -155,10 +271,10 @@ void Collision() {
     //check for collision
     for (int i = 0; i < Objects.size(); i++) {
         if (Objects[i]->collideableobject) {
-            std::string h = "Hello There";
+            //std::string h = "Hello There";
             if ((Objects[i]->right_collider() > movement_change_x && Objects[i]->left_collider() < movement_change_x) &&
                 (Objects[i]->bottom_collider() > movement_change_y && Objects[i]->top_collider() < movement_change_y)) {
-                std::string h1 = "General Kenobi";
+                //std::string h1 = "General Kenobi";
                 hit = true;
                 break;
             }
@@ -166,7 +282,7 @@ void Collision() {
     }
     //Collision Event
     if (!hit) {
-        Player_image.move(movement_change_x, movement_change_y);
+        Objects[0]->move(movement_change_x, movement_change_y);
         redraw_nessesary = true;
     }
 }
@@ -216,9 +332,12 @@ int main()
     delete im;
 
     total_image_size = imagesize;
-    Player_image = Object(Image[0], (P_y * total_image_size) + (total_image_size / 2), (P_x * total_image_size) + (total_image_size / 2));
+    //Player_image = Object(Image[0], (P_y * total_image_size) + (total_image_size / 2), (P_x * total_image_size) + (total_image_size / 2));
 
     Object* ny = { nullptr };
+    Objects.push_back(ny = new Object(Image[0], (P_y * total_image_size) + (total_image_size / 2), (P_x * total_image_size) + (total_image_size / 2)));
+    ny->layer = 1;
+    ny->Name = "Player";
     int x = total_image_size / 2;
     int y = total_image_size / 2;
     for (int i = 0; i < fl.x(); i++) {
@@ -234,7 +353,8 @@ int main()
             }
             if (fl.readlocation(i, j) == 'S') {
                 Objects.push_back(ny = new Object(Image[2], x, y));
-                ny->collideableobject = true;
+                //ny->collideableobject = true;
+                ny->Name = "Start";
             }
             if (fl.readlocation(i, j) == ' ') {
                 Objects.push_back(ny = new Object(Image[3], x, y));

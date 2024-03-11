@@ -29,3 +29,21 @@ void Object::move(int new_x, int new_y)
 	collider[3] = Loc[1] + Size[1] / 2; //y_1
 	//img->move(Loc[0], Loc[1]);
 }
+
+void Object::add_temp_image(images* image)
+{
+	usetmpimg = true;
+	tmp_img = image;
+}
+
+void Object::draw_Object(HDC hdc)
+{
+	if (usetmpimg) {
+		tmp_img->draw_on_location(hdc, collider[0], collider[2]);
+		usetmpimg = false;
+		delete tmp_img;
+	}
+	else {
+		img->draw_on_location(hdc, Loc[0], Loc[1]);
+	}
+}

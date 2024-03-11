@@ -29,9 +29,14 @@ public:
 	images* image() { return img; }
 
 	void move(int new_x, int new_y);
+	void add_temp_image(images* image);
+	void draw_Object(HDC hdc);
 private:
 	int Loc[2]; //Is going to be in the centre of the object
 	int Size[2];
 	images* img;
 	int collider[4]; //TODO: Make an actual collider class
+
+	images* tmp_img{ nullptr };
+	bool usetmpimg{ false };
 };

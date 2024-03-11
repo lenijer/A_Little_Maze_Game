@@ -17,6 +17,7 @@ public:
 	images(std::string filepath);
 	images(std::string filepath, int x, int y, int image_size = 16);
 	images(int Location_x = 0, int Location_y = 0, colour unicolour = colour(0, 0, 0, 255), int image_size = 16);
+	images(std::vector <pixel*> pixel_array) { pixels = pixel_array; }
 	~images() { };
 
 	const int get_x() { return loc[0]; }
