@@ -25,7 +25,6 @@ int P_y = 11; //player y
 HDC someHDC;
 Input input;
 
-//Object Player_image;
 std::vector <Object*> Objects;
 std::vector <images*> Image;
 
@@ -33,13 +32,11 @@ int screen_x;
 int screen_y;
 int total_image_size;
 int game_timer{ 0 };
-//int top_layer{ 1 };
 bool run{ true };
 bool fullscreen{ false };
 bool redraw_nessesary{ false };
 
 images* blend_images(images* i1, images* i2) {
-    //image* n_img;
     std::vector <pixel*> pix_arr;
     int r1, g1, b1, r2, b2, g2, a;
     float r, g, b;
@@ -59,10 +56,8 @@ images* blend_images(images* i1, images* i2) {
 
         colour c = colour((int)r, (int)g, (int)b, 255);
         pixel* p = new pixel(c, i1->GetPixel(k).get_x(), i1->GetPixel(k).get_y());
-        //p.drawpixel(someHDC);
         pix_arr.push_back(p);
     }
-    //tmp_img.push_back(n_img = new images(pix_arr));
     return new images(pix_arr);
 }
 
@@ -70,7 +65,6 @@ void Draw() {
     Object* tmp;
     std::vector <Object*> O;
     bool weird = false;
-    //std::vector <images*> tmp_img;
 
     for (int i = 0; i < Objects.size(); i++) {
         tmp = Objects[i];
@@ -80,31 +74,6 @@ void Draw() {
                     weird = true;
                     if (tmp->layer > O[j]->layer) {
                         if (tmp->image()->HasTransparentPixels()) {
-                            /*//image* n_img;
-                            std::vector <pixel*> pix_arr;
-                            int r1, g1, b1, r2, b2, g2, a;
-                            float r, g, b;
-                            for (int k = 0; k < tmp->image()->Vector_Length(); k++) {
-                                r1 = tmp->image()->GetPixel(k).GetColour().GetRed();
-                                g1 = tmp->image()->GetPixel(k).GetColour().GetGreen();
-                                b1 = tmp->image()->GetPixel(k).GetColour().GetBlue();
-                                a = tmp->image()->GetPixel(k).GetColour().GetAlpha();
-
-                                r2 = O[j]->image()->GetPixel(tmp->image()->GetPixel(k).get_x(), tmp->image()->GetPixel(k).get_y()).GetColour().GetRed();
-                                g2 = O[j]->image()->GetPixel(tmp->image()->GetPixel(k).get_x(), tmp->image()->GetPixel(k).get_y()).GetColour().GetGreen();
-                                b2 = O[j]->image()->GetPixel(tmp->image()->GetPixel(k).get_x(), tmp->image()->GetPixel(k).get_y()).GetColour().GetBlue();
-
-                                r = r1 * ((float)a / 255) + r2 * ((255 - (float)a) / 255);
-                                g = g1 * ((float)a / 255) + g2 * ((255 - (float)a) / 255);
-                                b = b1 * ((float)a / 255) + b2 * ((255 - (float)a) / 255);
-
-                                colour c = colour((int)r, (int)g, (int)b, 255);
-                                pixel p = pixel(c, tmp->image()->GetPixel(k).get_x(), tmp->image()->GetPixel(k).get_y());
-                                //p.drawpixel(someHDC);
-                                pix_arr.push_back(&p);
-                            }
-                            //tmp_img.push_back(n_img = new images(pix_arr));
-                            tmp->add_temp_image(new images(pix_arr));*/
                             tmp->add_temp_image(blend_images(tmp->image(), O[j]->image()));
                         }
                         O[j] = tmp;
@@ -113,31 +82,6 @@ void Draw() {
                     {
                         if (O[j]->image()->HasTransparentPixels()) {
                             O[j]->add_temp_image(blend_images(O[j]->image(), tmp->image()));
-                            /*//image* n_img;
-                            std::vector <pixel*> pix_arr;
-                            int r1, g1, b1, r2, b2, g2, a;
-                            float r, g, b;
-                            for (int k = 0; k < O[j]->image()->Vector_Length(); k++) {
-                                r1 = O[j]->image()->GetPixel(k).GetColour().GetRed();
-                                g1 = O[j]->image()->GetPixel(k).GetColour().GetGreen();
-                                b1 = O[j]->image()->GetPixel(k).GetColour().GetBlue();
-                                a = O[j]->image()->GetPixel(k).GetColour().GetAlpha();
-
-                                r2 = tmp->image()->GetPixel(O[j]->image()->GetPixel(k).get_x(), O[j]->image()->GetPixel(k).get_y()).GetColour().GetRed();
-                                g2 = tmp->image()->GetPixel(O[j]->image()->GetPixel(k).get_x(), O[j]->image()->GetPixel(k).get_y()).GetColour().GetGreen();
-                                b2 = tmp->image()->GetPixel(O[j]->image()->GetPixel(k).get_x(), O[j]->image()->GetPixel(k).get_y()).GetColour().GetBlue();
-
-                                r = r1 * ((float)a / 255) + r2 * ((255 - (float)a) / 255);
-                                g = g1 * ((float)a / 255) + g2 * ((255 - (float)a) / 255);
-                                b = b1 * ((float)a / 255) + b2 * ((255 - (float)a) / 255);
-
-                                colour c = colour((int)r, (int)g, (int)b, 255);
-                                pixel p = pixel(c, O[j]->image()->GetPixel(k).get_x(), O[j]->image()->GetPixel(k).get_y());
-                                //p.drawpixel(someHDC);
-                                pix_arr.push_back(&p);
-                            }
-                            //tmp_img.push_back(n_img = new images(pix_arr));
-                            O[j]->add_temp_image(new images(pix_arr));/**/
                         }
                     }
                 }
@@ -150,42 +94,7 @@ void Draw() {
     }
     for (int i = 0; i < O.size(); i++) {
         O[i]->draw_Object(someHDC);
-        //O[i]->image()->draw_on_location(someHDC, O[i]->x(), O[i]->y());
     }
-
-
-    /*for (int i = 0; i < Objects.size(); i++) {
-        if (Player_image.x() == Objects[i]->x() && Player_image.y() == Objects[i]->y()) {
-            if (Player_image.image()->HasTransparentPixels()) {
-                int r1, g1, b1, r2, b2, g2, a;
-                float r, g, b;
-                for (int j = 0; j < Player_image.image()->Vector_Length(); j++) {
-                    r1 = Player_image.image()->GetPixel(j).GetColour().GetRed();
-                    g1 = Player_image.image()->GetPixel(j).GetColour().GetGreen();
-                    b1 = Player_image.image()->GetPixel(j).GetColour().GetBlue();
-                    a = Player_image.image()->GetPixel(j).GetColour().GetAlpha();
-
-                    r2 = Objects[i]->image()->GetPixel(Player_image.image()->GetPixel(j).get_x(), Player_image.image()->GetPixel(j).get_y()).GetColour().GetRed();
-                    g2 = Objects[i]->image()->GetPixel(Player_image.image()->GetPixel(j).get_x(), Player_image.image()->GetPixel(j).get_y()).GetColour().GetGreen();
-                    b2 = Objects[i]->image()->GetPixel(Player_image.image()->GetPixel(j).get_x(), Player_image.image()->GetPixel(j).get_y()).GetColour().GetBlue();
-
-                    r = r1 * ((float)a / 255) + r2 * ((255 - (float)a) / 255);
-                    g = g1 * ((float)a / 255) + g2 * ((255 - (float)a) / 255);
-                    b = b1 * ((float)a / 255) + b2 * ((255 - (float)a) / 255);
-
-                    colour c = colour((int)r, (int)g, (int)b, 255);
-                    pixel p = pixel(c, Player_image.image()->GetPixel(j).get_x() + Player_image.left_collider(), Player_image.image()->GetPixel(j).get_y() + Player_image.top_collider());
-                    p.drawpixel(someHDC);
-                }
-            }
-            else {
-                Player_image.image()->draw_on_location(someHDC, Player_image.x(), Player_image.y());
-            }
-        }
-        else {
-            Objects[i]->image()->draw_on_location(someHDC, Objects[i]->x(), Objects[i]->y());
-        }
-    }/**/
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
@@ -332,7 +241,6 @@ int main()
     delete im;
 
     total_image_size = imagesize;
-    //Player_image = Object(Image[0], (P_y * total_image_size) + (total_image_size / 2), (P_x * total_image_size) + (total_image_size / 2));
 
     Object* ny = { nullptr };
     Objects.push_back(ny = new Object(Image[0], (P_y * total_image_size) + (total_image_size / 2), (P_x * total_image_size) + (total_image_size / 2)));
@@ -343,7 +251,6 @@ int main()
     for (int i = 0; i < fl.x(); i++) {
         for (int j = 0; j < fl.y(); j++) {
             if (fl.readlocation(i, j) == 'W') {
-                //Objects.push_back(ny = new Object(new images("Assets/Images/Wall.bmp", x, y, total_image_size), x, y));
                 Objects.push_back(ny = new Object(Image[4], x, y));
                 ny->Name = "Wall";
                 ny->collideableobject = true;
