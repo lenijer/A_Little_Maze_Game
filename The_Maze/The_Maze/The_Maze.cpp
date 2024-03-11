@@ -184,7 +184,12 @@ void Collision() {
             if ((Objects[i]->right_collider() > movement_change_x && Objects[i]->left_collider() < movement_change_x) &&
                 (Objects[i]->bottom_collider() > movement_change_y && Objects[i]->top_collider() < movement_change_y)) {
                 //std::string h1 = "General Kenobi";
-                hit = true;
+                if (Objects[i]->Name == "End") {
+                    run = false;
+                }
+                else {
+                    hit = true;
+                }
                 break;
             }
         }
@@ -259,6 +264,7 @@ int main()
                 Objects.push_back(ny = new Object(Image[1], x, y)); //End Object
                 ny->Name = "End";
                 ny->layer = 1;
+                ny->collideableobject = true;
                 Objects.push_back(ny = new Object(Image[3], x, y)); //Floor
             }
             if (fl.readlocation(i, j) == 'S') {
@@ -296,12 +302,9 @@ int main()
             TranslateMessage(&messages);
             DispatchMessage(&messages);
         }
-
-        if (fl.readlocation(P_x, P_y) == 'E') {
-            DestroyWindow(windowHandle);
-            run = false;
-        }
     }
+
+    DestroyWindow(windowHandle);
 
     ReleaseDC(windowHandle, someHDC);
     DeleteObject(windowHandle);
