@@ -336,7 +336,7 @@ int main()
 
     Object* ny = { nullptr };
     Objects.push_back(ny = new Object(Image[0], (P_y * total_image_size) + (total_image_size / 2), (P_x * total_image_size) + (total_image_size / 2)));
-    ny->layer = 1;
+    ny->layer = 2;
     ny->Name = "Player";
     int x = total_image_size / 2;
     int y = total_image_size / 2;
@@ -349,12 +349,17 @@ int main()
                 ny->collideableobject = true;
             }
             if (fl.readlocation(i, j) == 'E') {
-                Objects.push_back(ny = new Object(Image[1], x, y));
+                Objects.push_back(ny = new Object(Image[1], x, y)); //End Object
+                ny->Name = "End";
+                ny->layer = 1;
+                Objects.push_back(ny = new Object(Image[3], x, y)); //Floor
             }
             if (fl.readlocation(i, j) == 'S') {
-                Objects.push_back(ny = new Object(Image[2], x, y));
-                //ny->collideableobject = true;
+                Objects.push_back(ny = new Object(Image[2], x, y)); //Start Object
+                ny->collideableobject = true;
                 ny->Name = "Start";
+                ny->layer = 1;
+                Objects.push_back(ny = new Object(Image[3], x, y)); //Floor
             }
             if (fl.readlocation(i, j) == ' ') {
                 Objects.push_back(ny = new Object(Image[3], x, y));
