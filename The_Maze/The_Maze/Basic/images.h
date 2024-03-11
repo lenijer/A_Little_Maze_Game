@@ -32,6 +32,7 @@ public:
 	void draw(HDC hdc);
 	void draw_on_location(HDC hdc, int x, int y);
 	void transparentpixels(bool trans) { hastransparentpixels = trans; }
+	void Delete();
 
 	int width{ 0 };
 	int height{ 0 };

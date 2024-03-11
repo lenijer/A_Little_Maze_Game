@@ -40,6 +40,7 @@ void Object::draw_Object(HDC hdc)
 {
 	if (usetmpimg) {
 		tmp_img->draw_on_location(hdc, collider[0], collider[2]);
+		tmp_img->Delete();
 		usetmpimg = false;
 		delete tmp_img;
 	}

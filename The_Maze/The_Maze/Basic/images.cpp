@@ -367,3 +367,11 @@ void images::draw_on_location(HDC hdc, int x, int y)
 		pixels[i]->draw_in_location(hdc, pixels[i]->get_x() + relative_x, pixels[i]->get_y() + relative_y);
 	}
 }
+
+void images::Delete()
+{
+	for (int i = 0; i < pixels.size(); i++) {
+		delete pixels[i];
+	}
+	pixels.clear();
+}
