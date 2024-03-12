@@ -19,14 +19,15 @@
 
 const int imagesize = 16; //fine on even numbers
 
-int P_x = 0; //player x
-int P_y = 11; //player y
+//int P_x = 0; //player x
+//int P_y = 11; //player y
 
 HDC someHDC;
 Input input;
 
 std::vector <Object*> Objects;
 std::vector <images*> Image;
+std::vector <Floor> fl;
 
 int screen_x;
 int screen_y;
@@ -35,6 +36,7 @@ int game_timer{ 0 };
 bool run{ true };
 bool fullscreen{ false };
 bool redraw_nessesary{ false };
+int floor_index{ 0 };
 
 images* blend_images(images* i1, images* i2) {
     std::vector <pixel*> pix_arr;
@@ -161,6 +163,52 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
     return 0L;
 }
 
+void floorsetup(int floor_num) {
+    for (int i = 0; i < Objects.size(); i++) {
+        delete Objects[i];
+    }
+    Objects.clear();
+
+    Object* ny = { nullptr };
+    Objects.push_back(ny = new Object(Image[0], 0, 0));
+    ny->layer = 2;
+    ny->Name = "Player";
+    int x = total_image_size / 2;
+    int y = total_image_size / 2;
+    for (int i = 0; i < fl[floor_num].x(); i++) {
+        for (int j = 0; j < fl[floor_num].y(); j++) {
+            if (fl[floor_num].readlocation(i, j) == 'W') {
+                Objects.push_back(ny = new Object(Image[4], x, y));
+                ny->Name = "Wall";
+                ny->collideableobject = true;
+            }
+            if (fl[floor_num].readlocation(i, j) == 'E') {
+                Objects.push_back(ny = new Object(Image[1], x, y)); //End Object
+                ny->Name = "End";
+                ny->layer = 1;
+                ny->collideableobject = true;
+                Objects.push_back(ny = new Object(Image[3], x, y)); //Floor
+            }
+            if (fl[floor_num].readlocation(i, j) == 'S') {
+                Objects.push_back(ny = new Object(Image[2], x, y)); //Start Object
+                ny->collideableobject = true;
+                ny->Name = "Start";
+                ny->layer = 1;
+                Objects.push_back(ny = new Object(Image[3], x, y)); //Floor
+                Objects[0]->move(x, y);
+            }
+            if (fl[floor_num].readlocation(i, j) == ' ') {
+                Objects.push_back(ny = new Object(Image[3], x, y));
+            }
+            x += total_image_size;
+        }
+        x = total_image_size / 2;
+        y += total_image_size;
+    }
+    ny = new Object();
+    delete ny;
+}
+
 void Collision() {
     int movement_change_x = Objects[0]->x(); //Object[0] is the player
     int movement_change_y = Objects[0]->y();
@@ -185,7 +233,15 @@ void Collision() {
                 (Objects[i]->bottom_collider() > movement_change_y && Objects[i]->top_collider() < movement_change_y)) {
                 //std::string h1 = "General Kenobi";
                 if (Objects[i]->Name == "End") {
-                    run = false;
+                    if (floor_index == fl.size() - 1) {
+                        run = false;
+                    }
+                    else {
+                        floor_index++;
+                        floorsetup(floor_index);
+                        redraw_nessesary = true;
+                        return;
+                    }
                 }
                 else {
                     hit = true;
@@ -217,15 +273,16 @@ int main()
         MessageBox(NULL, L"Could not register class", L"Error", MB_OK);
     }
 
-    Floor fl = Floor("Assets/Floors/Floor1.txt");
+    fl.push_back(Floor("Assets/Floors/Floor1.txt"));
+    fl.push_back(Floor("Assets/Floors/Floor2.bmp"));
 
     if (fullscreen) {
         screen_x = GetSystemMetrics(SM_CXSCREEN); //Gets the computers screen dimentions for X
         screen_y = GetSystemMetrics(SM_CYSCREEN); //Gets the computers screen dimentions for Y
     }
     else {
-        screen_x = imagesize * fl.x();
-        screen_y = imagesize * fl.y();
+        screen_x = imagesize * fl[0].x();
+        screen_y = imagesize * fl[0].y();
     }
 
     HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_POPUP/*Don't Allow size change*/, (GetSystemMetrics(SM_CXSCREEN) / 2) - (screen_x / 2), (GetSystemMetrics(SM_CYSCREEN) / 2) - (screen_y / 2), screen_x, screen_y, NULL, NULL, NULL, NULL);
@@ -247,43 +304,7 @@ int main()
 
     total_image_size = imagesize;
 
-    Object* ny = { nullptr };
-    Objects.push_back(ny = new Object(Image[0], (P_y * total_image_size) + (total_image_size / 2), (P_x * total_image_size) + (total_image_size / 2)));
-    ny->layer = 2;
-    ny->Name = "Player";
-    int x = total_image_size / 2;
-    int y = total_image_size / 2;
-    for (int i = 0; i < fl.x(); i++) {
-        for (int j = 0; j < fl.y(); j++) {
-            if (fl.readlocation(i, j) == 'W') {
-                Objects.push_back(ny = new Object(Image[4], x, y));
-                ny->Name = "Wall";
-                ny->collideableobject = true;
-            }
-            if (fl.readlocation(i, j) == 'E') {
-                Objects.push_back(ny = new Object(Image[1], x, y)); //End Object
-                ny->Name = "End";
-                ny->layer = 1;
-                ny->collideableobject = true;
-                Objects.push_back(ny = new Object(Image[3], x, y)); //Floor
-            }
-            if (fl.readlocation(i, j) == 'S') {
-                Objects.push_back(ny = new Object(Image[2], x, y)); //Start Object
-                ny->collideableobject = true;
-                ny->Name = "Start";
-                ny->layer = 1;
-                Objects.push_back(ny = new Object(Image[3], x, y)); //Floor
-            }
-            if (fl.readlocation(i, j) == ' ') {
-                Objects.push_back(ny = new Object(Image[3], x, y));
-            }
-            x += total_image_size;
-        }
-        x = total_image_size / 2;
-        y += total_image_size;
-    }
-    ny = new Object();
-    delete ny;
+    floorsetup(floor_index/**/);
 
     while (run) {
         game_timer++;

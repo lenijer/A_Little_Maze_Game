@@ -18,6 +18,7 @@ public:
 	const int GetRed() { return argb[1]; }
 	const int GetGreen() { return argb[2]; }
 	const int GetBlue() { return argb[3]; }
+	bool IsSameColour(colour comparison_colour);
 
 	COLORREF colorref(); //will retrun the hexcode for the color saved
 private:

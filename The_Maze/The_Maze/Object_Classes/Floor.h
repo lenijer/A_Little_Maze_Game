@@ -5,6 +5,8 @@
 *       Project Name: The Maze
 */
 #pragma once
+#include "../Basic/images.h"
+
 #include <string>
 #include <vector>
 
@@ -23,5 +25,6 @@ public:
 private:
 	std::vector <std::string> f;
 	std::string Name{""};
+	images* floorplan;
 };
 
