@@ -163,7 +163,7 @@ std::vector <pixel*> bitmapread(std::string filepath, images* img) {
 		offsetdata[i] = Headder_uchar[i + 10];
 	}
 
-	int offset_int = (int)offsetdata[3] + (int)offsetdata[2] + (int)offsetdata[1] + (int)offsetdata[0];
+	int offset_int = (int)offsetdata[3] + (int)offsetdata[2] + (((int)offsetdata[1]) * 256) + (int)offsetdata[0];
 	int size_int = (int)filesize_uchar[3] + (int)filesize_uchar[2] + (((int)filesize_uchar[1]) * 256) /*this might be wrong???*/ + (int)filesize_uchar[0];
 
 	rewind(f);

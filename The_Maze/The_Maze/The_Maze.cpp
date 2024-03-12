@@ -19,9 +19,6 @@
 
 const int imagesize = 16; //fine on even numbers
 
-//int P_x = 0; //player x
-//int P_y = 11; //player y
-
 HDC someHDC;
 Input input;
 
@@ -183,8 +180,16 @@ void floorsetup(int floor_num) {
                 ny->collideableobject = true;
             }
             if (fl[floor_num].readlocation(i, j) == 'E') {
-                Objects.push_back(ny = new Object(Image[1], x, y)); //End Object
-                ny->Name = "End";
+                if (floor_num < fl.size() - 1) {
+                    Objects.push_back(ny = new Object(Image[5], x, y)); //Stair Object
+                    ny->Name = "Stair";
+                }
+                else {
+                    Objects.push_back(ny = new Object(Image[1], x, y)); //End Object
+                    ny->Name = "End";
+                }
+                //Objects.push_back(ny = new Object(Image[1], x, y)); //End Object
+                //ny->Name = "End";
                 ny->layer = 1;
                 ny->collideableobject = true;
                 Objects.push_back(ny = new Object(Image[3], x, y)); //Floor
@@ -233,15 +238,13 @@ void Collision() {
                 (Objects[i]->bottom_collider() > movement_change_y && Objects[i]->top_collider() < movement_change_y)) {
                 //std::string h1 = "General Kenobi";
                 if (Objects[i]->Name == "End") {
-                    if (floor_index == fl.size() - 1) {
-                        run = false;
-                    }
-                    else {
-                        floor_index++;
-                        floorsetup(floor_index);
-                        redraw_nessesary = true;
-                        return;
-                    }
+                    run = false;
+                }
+                if (Objects[i]->Name == "Stair") {
+                    floor_index++;
+                    floorsetup(floor_index);
+                    redraw_nessesary = true;
+                    return;
                 }
                 else {
                     hit = true;
@@ -299,6 +302,7 @@ int main()
     Image.push_back(im = new images("Assets/Images/Start.bmp"));
     Image.push_back(im = new images("Assets/Images/Floor.bmp"));
     Image.push_back(im = new images("Assets/Images/Wall.bmp"));
+    Image.push_back(im = new images("Assets/Images/Stair.bmp"));
     im = new images();
     delete im;
 
