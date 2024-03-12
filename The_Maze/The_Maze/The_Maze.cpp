@@ -29,7 +29,7 @@ std::vector <Floor> fl;
 int screen_x;
 int screen_y;
 int total_image_size;
-int game_timer{ 0 };
+//int game_timer{ 0 };
 bool run{ true };
 bool fullscreen{ false };
 bool redraw_nessesary{ false };
@@ -311,7 +311,7 @@ int main()
     floorsetup(floor_index/**/);
 
     while (run) {
-        game_timer++;
+        //game_timer++;
         GetMessage(&messages, NULL, 0, 0);
 
         TranslateMessage(&messages);
