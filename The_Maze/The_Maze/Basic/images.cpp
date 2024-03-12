@@ -72,6 +72,10 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 	}
 	int PixelArraySize = rowsize * height_int;
 
+	int padding{ 0 };
+	int help = width_int / 2;
+	padding = help % 4;
+
 	std::vector <pixel*> pix;
 	int start;
 	std::vector <std::vector <unsigned char>> rgb_vec;
@@ -103,6 +107,7 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 			pix.push_back(new pixel(colour((int)rgb[0], (int)rgb[1], (int)rgb[2], 255), x_int, y_int));
 			x_int++;
 			if (x_int >= width_int) {
+				i += padding;
 				x_int = 0;
 				y_int--;
 			}
@@ -111,6 +116,7 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 			pix.push_back(new pixel(colour((int)rgb[0], (int)rgb[1], (int)rgb[2], 255), x_int, y_int));
 			x_int++;
 			if (x_int >= width_int) {
+				i += padding;
 				x_int = 0;
 				y_int--;
 			}
@@ -125,6 +131,7 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 			pix.push_back(new pixel(colour((int)wholefile_vec[i + 2], (int)wholefile_vec[i + 1], (int)wholefile_vec[i], (int)wholefile_vec[i + 3]), x_int, y_int));
 			x_int++;
 			if (x_int >= width_int) {
+				i += padding;
 				x_int = 0;
 				y_int--;
 			}
@@ -201,40 +208,19 @@ std::vector <pixel*> bitmapread(std::string filepath, images* img) {
 
 	int padding{0};
 	int help = width_int / 2;
-	/*while (help > 4) {
-		help = help / 4;
-	}/**/
 	padding = help % 4;
-	/*switch (help) {
-	case 0:
-		padding = 0;
-		break;
-	case 1:
-		padding = 3;
-		break;
-	case 2:
-		padding = 6;
-		break;
-	case 3:
-		padding = 9;
-		break;
-	}/**/
 
 	std::vector <pixel*> pix;
 	int start;
 	std::vector <std::vector <unsigned char>> rgb_vec;
 	int x_int{ 0 };
 	int y_int = height_int - 1;
-	//int j{ 0 };
 	switch (compression_int) {
 	case 0: //BI_RGB
-		//REMEMBER Padding
-		//these has no padding since width is a multiple of 4
 		start = 14 + sizeofDIB_int;
 
 		for (int i = start; i < offset_int; i += 4) {
 			rgb_vec.push_back({ wholefile_vec[i + 2], wholefile_vec[i + 1], wholefile_vec[i + 0], wholefile_vec[i + 3] });
-			//j++;
 		}
 
 		int read;
@@ -268,14 +254,13 @@ std::vector <pixel*> bitmapread(std::string filepath, images* img) {
 		break;
 	case 3: //BI_BITFIELDS (supposedly uses Huffman 1D compression method)
 		//seems to just store colour by colour
-		//REMEMBER padding
-		//Current file should work fine without padding
 		img->transparentpixels(true);
 		start = offset_int;
 		for (int i = start; i < wholefile_vec.size(); i += 4) {
 			pix.push_back(new pixel(colour((int)wholefile_vec[i + 2], (int)wholefile_vec[i + 1], (int)wholefile_vec[i], (int)wholefile_vec[i + 3]), x_int, y_int));
 			x_int++;
 			if (x_int >= width_int) {
+				i += padding;
 				x_int = 0;
 				y_int--;
 			}
