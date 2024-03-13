@@ -10,6 +10,7 @@
 #include <vector>
 
 //Selfmade classes
+#include "zone.h"
 #include "Basic/colour.h"
 #include "Basic/pixel.h"
 #include "Basic/images.h"
@@ -18,6 +19,7 @@
 #include "Object_Classes/Object.h"
 
 const int imagesize = 16; //fine on even numbers
+const int Objects_Per_Zone = 100;
 
 HDC someHDC;
 Input input;
@@ -25,6 +27,7 @@ Input input;
 std::vector <Object*> Objects;
 std::vector <images*> Image;
 std::vector <Floor> fl;
+std::vector <zone*> zones;
 
 int screen_x;
 int screen_y;
@@ -34,8 +37,12 @@ bool run{ true };
 bool fullscreen{ false };
 bool redraw_nessesary{ false };
 int floor_index{ 0 };
+bool first_draw{ true };
+bool Player_changedZone{ false };
+int player_prev_Zone{ 0 };
+int player_current_zone{ 0 };
 
-images* blend_images(images* i1, images* i2) {
+/*images* blend_images(images* i1, images* i2) {
     std::vector <pixel*> pix_arr;
     int r1, g1, b1, r2, b2, g2, a;
     float r, g, b;
@@ -58,10 +65,28 @@ images* blend_images(images* i1, images* i2) {
         pix_arr.push_back(p);
     }
     return new images(pix_arr);
-}
+}/**/
 
 void Draw() {
-    Object* tmp;
+    if (first_draw)
+    {
+        for (int i = 0; i < zones.size(); i++) {
+            if (first_draw && zones[i]->Objects_size() > 0) {
+                zones[i]->Draw(someHDC);
+            }
+        }
+        first_draw = false;
+        return;
+    }
+    zones[player_current_zone]->Draw(someHDC);
+
+    if (Player_changedZone) {
+        zones[player_prev_Zone]->Draw(someHDC);
+        Player_changedZone = false;
+    }
+
+
+    /*Object* tmp;
     std::vector <Object*> O;
     bool weird = false;
 
@@ -93,7 +118,7 @@ void Draw() {
     }
     for (int i = 0; i < O.size(); i++) {
         O[i]->draw_Object(someHDC);
-    }
+    }/**/
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
@@ -160,7 +185,36 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
     return 0L;
 }
 
+int index_count = { 0 };
+void zoneGen(int index,/**/ int y_0, int y_1, int x_0, int x_1) {
+    int height = y_1 - y_0;
+    int width = x_1 - x_0;
+    zones.push_back(new zone(y_0, y_1, x_1, x_0));
+    for (int i = 1; i < Objects.size(); i++) {
+        if (zones[index]->Is_in_zone(Objects[i])) {
+            zones[index]->addObject(Objects[i]);
+        }
+    }
+    if (zones[index]->Has_Max_Objects(Objects_Per_Zone)) {
+        index_count++;
+        zoneGen(index_count,/**/ y_0, y_0 + height / 2, x_0, x_0 + width / 2);
+        index_count++;
+        zoneGen(index_count,/**/ y_0 + height / 2, y_1, x_0, x_0 + width / 2);
+        index_count++;
+        zoneGen(index_count,/**/ y_0, y_0 + height / 2, x_0 + width / 2, x_1);
+        index_count++;
+        zoneGen(index_count,/**/ y_0 + height / 2, y_1, x_0 + width / 2, x_1);
+        zones[index]->Delete();
+    }
+}
+
 void floorsetup(int floor_num) {
+    first_draw = true;
+    for (int i = 0; i < zones.size(); i++) {
+        zones[i]->Delete();
+        delete zones[i];
+    }
+    zones.clear();
     for (int i = 0; i < Objects.size(); i++) {
         delete Objects[i];
     }
@@ -188,8 +242,6 @@ void floorsetup(int floor_num) {
                     Objects.push_back(ny = new Object(Image[1], x, y)); //End Object
                     ny->Name = "End";
                 }
-                //Objects.push_back(ny = new Object(Image[1], x, y)); //End Object
-                //ny->Name = "End";
                 ny->layer = 1;
                 ny->collideableobject = true;
                 Objects.push_back(ny = new Object(Image[3], x, y)); //Floor
@@ -212,6 +264,17 @@ void floorsetup(int floor_num) {
     }
     ny = new Object();
     delete ny;
+
+    zoneGen(0,/**/ 0, screen_y, 0, screen_x);
+    for (int i = 0; i < zones.size(); i++) {
+        if (zones[i]->Is_in_zone(Objects[0]) && zones[i]->Objects_size() > 0) {
+            //player_prev_Zone = player_current_zone;
+            player_current_zone = i;
+            //Player_changedZone = true;
+            break;
+        }
+    }
+    zones[player_current_zone]->addPlayer(Objects[0]);
 }
 
 void Collision() {
@@ -256,6 +319,25 @@ void Collision() {
     //Collision Event
     if (!hit) {
         Objects[0]->move(movement_change_x, movement_change_y);
+        for (int i = 0; i < zones.size(); i++) {
+            if (zones[i]->find_Player(Objects[0]) && (!zones[i]->Is_in_zone(Objects[0]))) {
+                player_prev_Zone = i;
+                for (int j = 0; j < zones.size(); j++) {
+                    if (zones[j]->Is_in_zone(Objects[0]) && zones[i]->Objects_size() > 0) {
+                        //player_prev_Zone = player_current_zone;
+                        player_current_zone = j;
+                        Player_changedZone = true;
+                        //zones[j].addPlayer(Objects[0]);
+                        //break;
+                    }
+                }
+                //break;
+            }
+        }
+        if (Player_changedZone) {
+            zones[player_prev_Zone]->Remove_Player();
+            zones[player_current_zone]->addPlayer(Objects[0]);
+        }
         redraw_nessesary = true;
     }
 }
@@ -311,7 +393,6 @@ int main()
     floorsetup(floor_index/**/);
 
     while (run) {
-        //game_timer++;
         GetMessage(&messages, NULL, 0, 0);
 
         TranslateMessage(&messages);
@@ -327,6 +408,7 @@ int main()
             TranslateMessage(&messages);
             DispatchMessage(&messages);
         }
+        //game_timer++;
     }
 
     DestroyWindow(windowHandle);

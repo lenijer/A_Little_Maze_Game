@@ -19,6 +19,14 @@ Object::Object(images* image, int x, int y, int sizeX, int sizeY)
 	collider[3] = Loc[1] + Size[1] / 2; //y_1
 }
 
+images* Object::image()
+{
+	if (usetmpimg) {
+		return tmp_img;
+	}
+	return img;
+}
+
 void Object::move(int new_x, int new_y)
 {
 	Loc[0] = new_x;

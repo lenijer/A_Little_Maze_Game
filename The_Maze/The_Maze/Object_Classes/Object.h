@@ -26,7 +26,7 @@ public:
 	const int top_collider() { return collider[2]; }
 	const int bottom_collider() { return collider[3]; }
 
-	images* image() { return img; }
+	images* image();
 
 	void move(int new_x, int new_y);
 	void add_temp_image(images* image);
