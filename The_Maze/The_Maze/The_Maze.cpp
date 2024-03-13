@@ -210,6 +210,7 @@ void zoneGen(int index,/**/ int y_0, int y_1, int x_0, int x_1) {
 
 void floorsetup(int floor_num) {
     first_draw = true;
+    index_count = 0;
     for (int i = 0; i < zones.size(); i++) {
         zones[i]->Delete();
         delete zones[i];
