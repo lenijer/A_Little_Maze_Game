@@ -24,6 +24,5 @@ public:
 private:
 	std::vector <Object*> O;
 	int area[4];
-	//int Player_index{ 0 };
 };
 

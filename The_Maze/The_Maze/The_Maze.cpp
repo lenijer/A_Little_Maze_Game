@@ -42,31 +42,6 @@ bool Player_changedZone{ false };
 int player_prev_Zone{ 0 };
 int player_current_zone{ 0 };
 
-/*images* blend_images(images* i1, images* i2) {
-    std::vector <pixel*> pix_arr;
-    int r1, g1, b1, r2, b2, g2, a;
-    float r, g, b;
-    for (int k = 0; k < i1->Vector_Length(); k++) {
-        r1 = i1->GetPixel(k).GetColour().GetRed();
-        g1 = i1->GetPixel(k).GetColour().GetGreen();
-        b1 = i1->GetPixel(k).GetColour().GetBlue();
-        a = i1->GetPixel(k).GetColour().GetAlpha();
-
-        r2 = i2->GetPixel(i1->GetPixel(k).get_x(), i1->GetPixel(k).get_y()).GetColour().GetRed();
-        g2 = i2->GetPixel(i1->GetPixel(k).get_x(), i1->GetPixel(k).get_y()).GetColour().GetGreen();
-        b2 = i2->GetPixel(i1->GetPixel(k).get_x(), i1->GetPixel(k).get_y()).GetColour().GetBlue();
-
-        r = r1 * ((float)a / 255) + r2 * ((255 - (float)a) / 255);
-        g = g1 * ((float)a / 255) + g2 * ((255 - (float)a) / 255);
-        b = b1 * ((float)a / 255) + b2 * ((255 - (float)a) / 255);
-
-        colour c = colour((int)r, (int)g, (int)b, 255);
-        pixel* p = new pixel(c, i1->GetPixel(k).get_x(), i1->GetPixel(k).get_y());
-        pix_arr.push_back(p);
-    }
-    return new images(pix_arr);
-}/**/
-
 void Draw() {
     if (first_draw)
     {
@@ -84,41 +59,6 @@ void Draw() {
         zones[player_prev_Zone]->Draw(someHDC);
         Player_changedZone = false;
     }
-
-
-    /*Object* tmp;
-    std::vector <Object*> O;
-    bool weird = false;
-
-    for (int i = 0; i < Objects.size(); i++) {
-        tmp = Objects[i];
-        if (O.size() > 0) {
-            for (int j = 0; j < O.size(); j++) {
-                if (tmp->x() == O[j]->x() && tmp->y() == O[j]->y()) {
-                    weird = true;
-                    if (tmp->layer > O[j]->layer) {
-                        if (tmp->image()->HasTransparentPixels()) {
-                            tmp->add_temp_image(blend_images(tmp->image(), O[j]->image()));
-                        }
-                        O[j] = tmp;
-                    }
-                    else
-                    {
-                        if (O[j]->image()->HasTransparentPixels()) {
-                            O[j]->add_temp_image(blend_images(O[j]->image(), tmp->image()));
-                        }
-                    }
-                }
-            }
-        }
-        if (!weird) {
-            O.push_back(tmp);
-        }
-        weird = false;
-    }
-    for (int i = 0; i < O.size(); i++) {
-        O[i]->draw_Object(someHDC);
-    }/**/
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
@@ -269,9 +209,7 @@ void floorsetup(int floor_num) {
     zoneGen(0,/**/ 0, screen_y, 0, screen_x);
     for (int i = 0; i < zones.size(); i++) {
         if (zones[i]->Is_in_zone(Objects[0]) && zones[i]->Objects_size() > 0) {
-            //player_prev_Zone = player_current_zone;
             player_current_zone = i;
-            //Player_changedZone = true;
             break;
         }
     }
@@ -325,14 +263,10 @@ void Collision() {
                 player_prev_Zone = i;
                 for (int j = 0; j < zones.size(); j++) {
                     if (zones[j]->Is_in_zone(Objects[0]) && zones[i]->Objects_size() > 0) {
-                        //player_prev_Zone = player_current_zone;
                         player_current_zone = j;
                         Player_changedZone = true;
-                        //zones[j].addPlayer(Objects[0]);
-                        //break;
                     }
                 }
-                //break;
             }
         }
         if (Player_changedZone) {

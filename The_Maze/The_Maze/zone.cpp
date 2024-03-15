@@ -90,9 +90,6 @@ void zone::Draw(HDC hdc)
 
 void zone::Delete()
 {
-    /*for (int i = 0; i < O.size(); i++) {
-        delete O[i];
-    }/**/
     O.clear();
 }
 

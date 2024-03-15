@@ -84,8 +84,6 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 	int j{ 0 };
 	switch (compression_int) {
 	case 0: //BI_RGB
-		//REMEMBER Padding
-		//these has no padding since width is a multiple of 4
 		start = 14 + sizeofDIB_int;
 
 		for (int i = start; i < offset_int; i += 4) {
@@ -124,8 +122,6 @@ std::vector <pixel*> bitmapread(std::string filepath) {
 		break;
 	case 3: //BI_BITFIELDS (supposedly uses Huffman 1D compression method)
 		//seems to just store colour by colour
-		//REMEMBER padding
-		//Current file should work fine without padding
 		start = offset_int;
 		for (int i = start; i < wholefile_vec.size(); i += 4) {
 			pix.push_back(new pixel(colour((int)wholefile_vec[i + 2], (int)wholefile_vec[i + 1], (int)wholefile_vec[i], (int)wholefile_vec[i + 3]), x_int, y_int));
