@@ -18,7 +18,7 @@
 #include "Object_Classes/Floor.h"
 #include "Object_Classes/Object.h"
 
-const int imagesize = 16; //fine on even numbers
+const int imagesize = 32; //fine on even numbers
 const int Objects_Per_Zone = 100;
 
 HDC someHDC;
@@ -162,7 +162,7 @@ void floorsetup(int floor_num) {
     Objects.clear();
 
     Object* ny = { nullptr };
-    Objects.push_back(ny = new Object(Image[0], 0, 0));
+    Objects.push_back(ny = new Object(Image[0], 0, 0, imagesize, imagesize));
     ny->layer = 2;
     ny->Name = "Player";
     int x = total_image_size / 2;
@@ -170,33 +170,33 @@ void floorsetup(int floor_num) {
     for (int i = 0; i < fl[floor_num].x(); i++) {
         for (int j = 0; j < fl[floor_num].y(); j++) {
             if (fl[floor_num].readlocation(i, j) == 'W') {
-                Objects.push_back(ny = new Object(Image[4], x, y));
+                Objects.push_back(ny = new Object(Image[4], x, y, imagesize, imagesize));
                 ny->Name = "Wall";
                 ny->collideableobject = true;
             }
             if (fl[floor_num].readlocation(i, j) == 'E') {
                 if (floor_num < fl.size() - 1) {
-                    Objects.push_back(ny = new Object(Image[5], x, y)); //Stair Object
+                    Objects.push_back(ny = new Object(Image[5], x, y, imagesize, imagesize)); //Stair Object
                     ny->Name = "Stair";
                 }
                 else {
-                    Objects.push_back(ny = new Object(Image[1], x, y)); //End Object
+                    Objects.push_back(ny = new Object(Image[1], x, y, imagesize, imagesize)); //End Object
                     ny->Name = "End";
                 }
                 ny->layer = 1;
                 ny->collideableobject = true;
-                Objects.push_back(ny = new Object(Image[3], x, y)); //Floor
+                Objects.push_back(ny = new Object(Image[3], x, y, imagesize, imagesize)); //Floor
             }
             if (fl[floor_num].readlocation(i, j) == 'S') {
-                Objects.push_back(ny = new Object(Image[2], x, y)); //Start Object
+                Objects.push_back(ny = new Object(Image[2], x, y, imagesize, imagesize)); //Start Object
                 ny->collideableobject = true;
                 ny->Name = "Start";
                 ny->layer = 1;
-                Objects.push_back(ny = new Object(Image[3], x, y)); //Floor
+                Objects.push_back(ny = new Object(Image[3], x, y, imagesize, imagesize)); //Floor
                 Objects[0]->move(x, y);
             }
             if (fl[floor_num].readlocation(i, j) == ' ') {
-                Objects.push_back(ny = new Object(Image[3], x, y));
+                Objects.push_back(ny = new Object(Image[3], x, y, imagesize, imagesize));
             }
             x += total_image_size;
         }
@@ -314,12 +314,12 @@ int main()
     MSG messages;
 
     images* im = { nullptr };
-    Image.push_back(im = new images("Assets/Images/Player.bmp"));
-    Image.push_back(im = new images("Assets/Images/End.bmp"));
-    Image.push_back(im = new images("Assets/Images/Start.bmp"));
-    Image.push_back(im = new images("Assets/Images/Floor.bmp"));
-    Image.push_back(im = new images("Assets/Images/Wall.bmp"));
-    Image.push_back(im = new images("Assets/Images/Stair.bmp"));
+    Image.push_back(im = new images("Assets/Images/Player32.bmp"));
+    Image.push_back(im = new images("Assets/Images/End32.bmp"));
+    Image.push_back(im = new images("Assets/Images/Start32.bmp"));
+    Image.push_back(im = new images("Assets/Images/Floor32.bmp"));
+    Image.push_back(im = new images("Assets/Images/Wall32.bmp"));
+    Image.push_back(im = new images("Assets/Images/Stair32.bmp"));
     im = new images();
     delete im;
 
