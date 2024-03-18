@@ -18,7 +18,7 @@
 #include "Object_Classes/Floor.h"
 #include "Object_Classes/Object.h"
 
-const int imagesize = 32; //fine on even numbers
+const int imagesize = 16; //fine on even numbers
 const int Objects_Per_Zone = 100;
 
 HDC someHDC;
@@ -314,12 +314,12 @@ int main()
     MSG messages;
 
     images* im = { nullptr };
-    Image.push_back(im = new images("Assets/Images/Player32.bmp"));
-    Image.push_back(im = new images("Assets/Images/End32.bmp"));
-    Image.push_back(im = new images("Assets/Images/Start32.bmp"));
-    Image.push_back(im = new images("Assets/Images/Floor32.bmp"));
-    Image.push_back(im = new images("Assets/Images/Wall32.bmp"));
-    Image.push_back(im = new images("Assets/Images/Stair32.bmp"));
+    Image.push_back(im = new images("Assets/Images/Player.bmp"));
+    Image.push_back(im = new images("Assets/Images/End.bmp"));
+    Image.push_back(im = new images("Assets/Images/Start.bmp"));
+    Image.push_back(im = new images("Assets/Images/Floor.bmp"));
+    Image.push_back(im = new images("Assets/Images/Wall.bmp"));
+    Image.push_back(im = new images("Assets/Images/Stair.bmp"));
     im = new images();
     delete im;
 
