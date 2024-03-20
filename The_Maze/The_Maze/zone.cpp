@@ -1,3 +1,9 @@
+/*
+*       Made by: Lenita Njærheim
+*           Created On: 18/03-2024
+*           Completed: 18/03-2024
+*       Project Name: The Maze
+*/
 #include "zone.h"
 #include "Basic/images.h"
 #include "Basic/pixel.h"
