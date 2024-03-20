@@ -15,6 +15,8 @@ public:
 	void Remove_Player();
 	void Draw(HDC hdc);
 	void Delete();
+	void Background_Draw(images* background, HDC hdc);
+	void WriteText(std::wstring output, HDC hdc);
 
 	const int Objects_size() { return O.size(); }
 	const bool Has_Max_Objects(int max_objects);

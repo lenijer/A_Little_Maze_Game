@@ -93,6 +93,34 @@ void zone::Delete()
     O.clear();
 }
 
+void zone::Background_Draw(images* background, HDC hdc)
+{
+    for (int x = area[0]; x < area[1]; x += background->width) {
+        for (int y = area[2]; y < area[3]; y += background->height) {
+            background->draw_on_location(hdc, x + background->width / 2, y + background->height / 2);
+        }
+    }
+}
+
+void zone::WriteText(std::wstring output, HDC hdc)
+{
+    //https://stackoverflow.com/questions/22050749/c-winapi-textout-update-text
+    LPCWSTR Out = L"";
+    std::wstring help = L"";
+    int line = area[2];
+    for (int i = 0; i < output.length(); i++) {
+        help += output[i];
+        if (output[i] == '\n') {
+            Out = help.c_str();
+            TextOut(hdc, area[0], line, Out, wcslen(Out));
+            line += 16;
+            help = L"";
+        }
+    }
+    Out = help.c_str();
+    TextOut(hdc, area[0], line, Out, wcslen(Out));
+}
+
 bool zone::Is_in_zone(Object* Checker)
 {
 	if ((Checker->x() >= area[0] && Checker->x() < area[1]) && (Checker->y() >= area[2] && Checker->y() < area[3])) {

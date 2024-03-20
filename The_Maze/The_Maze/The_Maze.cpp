@@ -28,6 +28,7 @@ std::vector <Object*> Objects;
 std::vector <images*> Image;
 std::vector <Floor> fl;
 std::vector <zone*> zones;
+zone* textzone;
 
 int screen_x;
 int screen_y;
@@ -41,6 +42,11 @@ bool first_draw{ true };
 bool Player_changedZone{ false };
 int player_prev_Zone{ 0 };
 int player_current_zone{ 0 };
+bool textchange{ true };
+//std::string TextOutput_S = "Hello there";
+std::wstring TextOutput_WS = L"";
+//LPCWSTR TextOutput_LPC = L"Hello There\nGeneral Kenobi";
+//TCHAR TextOutput_Tchr[] = "Hello there";
 
 void Draw() {
     if (first_draw)
@@ -62,34 +68,39 @@ void Draw() {
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+    //https://stackoverflow.com/questions/27220/how-to-convert-stdstring-to-lpcwstr-in-c-unicode
+    //std::string s = "Hi";
+    /*std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    std::wstring wide = converter.from_bytes(TextOutput_S);
+    LPCWSTR result = wide.c_str();*/
     switch (message)
     {
     case WM_KEYDOWN:
-        if (wparam == 0x41/*A key https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes */) {
+        if (wparam == 0x41/*A key https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes */ || wparam == 0x25 /*left arrow key*/) {
             input.A = true;
         }
-        if (wparam == 0x44/*D key*/) {
+        if (wparam == 0x44/*D key*/ || wparam == 0x27 /*right arrow key*/) {
             input.D = true;
         }
-        if (wparam == 0x53/*S key*/) {
+        if (wparam == 0x53/*S key*/ || wparam == 0x28 /*down arrow key*/) {
             input.S = true;
         }
-        if (wparam == 0x57/*W key*/) {
+        if (wparam == 0x57/*W key*/ || wparam == 0x26 /*up arrow key*/) {
             input.W = true;
         }
         return 0L;
         break;
     case WM_KEYUP:
-        if (wparam == 0x41) {
+        if (wparam == 0x41 || wparam == 0x25) {
             input.A = false;
         }
-        if (wparam == 0x44) {
+        if (wparam == 0x44 || wparam == 0x27) {
             input.D = false;
         }
-        if (wparam == 0x53) {
+        if (wparam == 0x53 || wparam == 0x28) {
             input.S = false;
         }
-        if (wparam == 0x57) {
+        if (wparam == 0x57 || wparam == 0x26) {
             input.W = false;
         }
         return 0L;
@@ -102,8 +113,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
         ps.fErase = true;
         BeginPaint(hwnd, &ps);
         
-        //TextOut(hdc, 0, 0, "Hello, Windows!", 15);
         Draw();
+
+        if (textchange) {
+            textzone->Background_Draw(Image[6], someHDC); //background is white untill i figure out how to change it
+            textzone->WriteText(TextOutput_WS, someHDC);
+            textchange = false;
+        }
 
         EndPaint(hwnd, &ps);
         redraw_nessesary = false;
@@ -161,6 +177,16 @@ void floorsetup(int floor_num) {
     }
     Objects.clear();
 
+    char c = floor_num + 49;
+    std::string simplestring = "  ";
+    simplestring[1] = c;
+    //https://stackoverflow.com/questions/10737644/convert-const-char-to-wstring
+    int size_needed = MultiByteToWideChar(CP_UTF8, 0, &simplestring[0], (int)simplestring.size(), NULL, 0);
+    std::wstring wstrTo(size_needed, 0);
+    MultiByteToWideChar(CP_UTF8, 0, &simplestring[0], (int)simplestring.size(), &wstrTo[0], size_needed);
+    TextOutput_WS = L"Current Floor:" + wstrTo;
+    textchange = true;
+
     Object* ny = { nullptr };
     Objects.push_back(ny = new Object(Image[0], 0, 0, imagesize, imagesize));
     ny->layer = 2;
@@ -206,7 +232,9 @@ void floorsetup(int floor_num) {
     ny = new Object();
     delete ny;
 
-    zoneGen(0,/**/ 0, screen_y, 0, screen_x);
+    textzone = new zone(imagesize * fl[0].y(), screen_y, screen_x, 0);
+
+    zoneGen(0,/**/ 0, screen_y - 100, 0, screen_x);
     for (int i = 0; i < zones.size(); i++) {
         if (zones[i]->Is_in_zone(Objects[0]) && zones[i]->Objects_size() > 0) {
             player_current_zone = i;
@@ -302,7 +330,7 @@ int main()
     }
     else {
         screen_x = imagesize * fl[0].x();
-        screen_y = imagesize * fl[0].y();
+        screen_y = imagesize * fl[0].y() + 100;
     }
 
     HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_POPUP/*Don't Allow size change*/, (GetSystemMetrics(SM_CXSCREEN) / 2) - (screen_x / 2), (GetSystemMetrics(SM_CYSCREEN) / 2) - (screen_y / 2), screen_x, screen_y, NULL, NULL, NULL, NULL);
@@ -320,6 +348,7 @@ int main()
     Image.push_back(im = new images("Assets/Images/Floor.bmp"));
     Image.push_back(im = new images("Assets/Images/Wall.bmp"));
     Image.push_back(im = new images("Assets/Images/Stair.bmp"));
+    Image.push_back(im = new images("Assets/Images/DefaultBackground.bmp"));
     im = new images();
     delete im;
 
