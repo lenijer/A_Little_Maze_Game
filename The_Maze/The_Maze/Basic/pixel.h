@@ -1,7 +1,7 @@
 /*
 *       Made by: Lenita Njærheim
 *           Created On: 30/11-2023
-*           Completed: 05/01-2024
+*           Completed: 04/03-2024
 *       Project Name: The Maze
 */
 #pragma once
@@ -21,6 +21,7 @@ public:
 
 	void move(int new_x, int new_y);
 	void drawpixel(HDC hdc);
+	void draw_in_location(HDC hdc, int x, int y);
 private:
 	int loc[2];
 	colour c;

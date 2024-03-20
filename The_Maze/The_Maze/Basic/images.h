@@ -1,7 +1,7 @@
 /*
 *       Made by: Lenita Njærheim
 *           Created On: 01/12-2023
-*           Completed: 
+*           Completed: 04/03-2024
 *       Project Name: The Maze
 */
 #pragma once
@@ -14,8 +14,10 @@
 class images
 {
 public:
-	images(std::string filepath, int x = 0, int y = 0, int image_size = 16);
+	images(std::string filepath);
+	images(std::string filepath, int x, int y, int image_size = 16);
 	images(int Location_x = 0, int Location_y = 0, colour unicolour = colour(0, 0, 0, 255), int image_size = 16);
+	images(std::vector <pixel*> pixel_array) { pixels = pixel_array; }
 	~images() { };
 
 	const int get_x() { return loc[0]; }
@@ -28,11 +30,15 @@ public:
 
 	void move(int new_x, int new_y);
 	void draw(HDC hdc);
+	void draw_on_location(HDC hdc, int x, int y);
+	void transparentpixels(bool trans) { hastransparentpixels = trans; }
+	void Delete();
 
-	int layer{ 0 };
+	int width{ 0 };
+	int height{ 0 };
 private:
-	int loc[2];
-	int size;
+	int loc[2] = {0, 0};
+	int size{ 0 };
 	std::vector <pixel*> pixels;
 	bool hastransparentpixels{ false };
 };

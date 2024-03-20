@@ -1,7 +1,7 @@
 /*
 *       Made by: Lenita Njærheim
 *           Created On: 30/11-2023
-*           Completed: 05/01-2024
+*           Completed: 04/03-2024
 *       Project Name: The Maze
 */
 #include "pixel.h"
@@ -24,4 +24,9 @@ void pixel::move(int new_x, int new_y)
 void pixel::drawpixel(HDC hdc)
 {
 	SetPixelV(hdc, loc[0], loc[1], c.colorref());
+}
+
+void pixel::draw_in_location(HDC hdc, int x, int y)
+{
+	SetPixelV(hdc, x, y, c.colorref());
 }

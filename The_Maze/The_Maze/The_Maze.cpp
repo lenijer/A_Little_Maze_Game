@@ -8,52 +8,60 @@
 #include <string>
 #include <Windows.h>
 #include <vector>
-#include <codecvt>
 
 //Selfmade classes
+#include "zone.h"
 #include "Basic/colour.h"
 #include "Basic/pixel.h"
 #include "Basic/images.h"
 #include "Basic/Input.h"
 #include "Object_Classes/Floor.h"
+#include "Object_Classes/Object.h"
 
 const int imagesize = 16; //fine on even numbers
-const int x = 20;
-const int y = 20;
-
-int P_x = 0; //player x
-int P_y = 11; //player y
+const int Objects_Per_Zone = 100;
 
 HDC someHDC;
 Input input;
 
-//pixel Player_pixel;
-images Player_image;
-std::vector <images*> Objects;
-//Floor fl;
+std::vector <Object*> Objects;
+std::vector <images*> Image;
+std::vector <Floor> fl;
+std::vector <zone*> zones;
 
 int screen_x;
 int screen_y;
 int total_image_size;
-int game_timer{ 0 };
+//int game_timer{ 0 };
 bool run{ true };
-//std::string TextOutput_S = "Hello there";
-std::wstring TextOutput_WS = L"Hello there\nGeneral Kenobi";
-//LPCWSTR TextOutput_LPC = L"Hello There\nGeneral Kenobi";
-//TCHAR TextOutput_Tchr[] = "Hello there";
+bool fullscreen{ false };
+bool redraw_nessesary{ false };
+int floor_index{ 0 };
+bool first_draw{ true };
+bool Player_changedZone{ false };
+int player_prev_Zone{ 0 };
+int player_current_zone{ 0 };
+
+void Draw() {
+    if (first_draw)
+    {
+        for (int i = 0; i < zones.size(); i++) {
+            if (first_draw && zones[i]->Objects_size() > 0) {
+                zones[i]->Draw(someHDC);
+            }
+        }
+        first_draw = false;
+        return;
+    }
+    zones[player_current_zone]->Draw(someHDC);
+
+    if (Player_changedZone) {
+        zones[player_prev_Zone]->Draw(someHDC);
+        Player_changedZone = false;
+    }
+}
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
-    //https://stackoverflow.com/questions/27220/how-to-convert-stdstring-to-lpcwstr-in-c-unicode
-    //std::string s = "Hi";
-    /*std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    std::wstring wide = converter.from_bytes(TextOutput_S);
-    LPCWSTR result = wide.c_str();*/
-    //https://stackoverflow.com/questions/22050749/c-winapi-textout-update-text
-    //TCHAR text[256];
-    //swprintf_s(text, 256, L"%s", TextOutput_S);
-    LPCWSTR Out = L"";
-    std::wstring help = L"";
-    int line{ 0 };
     switch (message)
     {
     case WM_KEYDOWN:
@@ -93,52 +101,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
         PAINTSTRUCT ps;
         ps.fErase = true;
         BeginPaint(hwnd, &ps);
+        
+        //TextOut(hdc, 0, 0, "Hello, Windows!", 15);
+        Draw();
 
-        for (int i = 0; i < Objects.size(); i++ /*int i = Objects.size() - 1; i > 0; i--*/) {
-            if (Player_image.get_x() == Objects[i]->get_x() && Player_image.get_y() == Objects[i]->get_y()) {
-                if (Player_image.HasTransparentPixels()) {
-                    int r1, g1, b1, r2, b2, g2, a; 
-                    float r, g, b;
-                    for (int j = 0; j < Player_image.Vector_Length(); j++) {
-                        r1 = Player_image.GetPixel(j).GetColour().GetRed();
-                        g1 = Player_image.GetPixel(j).GetColour().GetGreen();
-                        b1 = Player_image.GetPixel(j).GetColour().GetBlue();
-                        a = Player_image.GetPixel(j).GetColour().GetAlpha();
-
-                        r2 = Objects[i]->GetPixel(Player_image.GetPixel(j).get_x(), Player_image.GetPixel(j).get_y()).GetColour().GetRed();
-                        g2 = Objects[i]->GetPixel(Player_image.GetPixel(j).get_x(), Player_image.GetPixel(j).get_y()).GetColour().GetGreen();
-                        b2 = Objects[i]->GetPixel(Player_image.GetPixel(j).get_x(), Player_image.GetPixel(j).get_y()).GetColour().GetBlue();
-
-                        r = r1 * ((float)a / 255) + r2 * ((255 - (float)a) / 255);
-                        g = g1 * ((float)a / 255) + g2 * ((255 - (float)a) / 255);
-                        b = b1 * ((float)a / 255) + b2 * ((255 - (float)a) / 255);
-
-                        colour c = colour((int)r, (int)g, (int)b, 255);
-                        pixel p = pixel(c, Player_image.GetPixel(j).get_x(), Player_image.GetPixel(j).get_y());
-                        p.drawpixel(someHDC);
-                    }
-                }
-                else {
-                    Player_image.draw(someHDC);
-                }
-            }
-            else {
-                Objects[i]->draw(someHDC);
-            }
-        }
-        for (int i = 0; i < TextOutput_WS.length(); i++) {
-            help += TextOutput_WS[i];
-            if (TextOutput_WS[i] == '\n') {
-                Out = help.c_str();
-                TextOut(someHDC, screen_x, line, Out, wcslen(Out));
-                line += 16;
-                help = L"";
-            }
-        }
-        Out = help.c_str();
-        TextOut(someHDC, screen_x, line, Out, wcslen(Out));
-        //TextOut(someHDC, screen_x, 0, text, wcslen(text));
         EndPaint(hwnd, &ps);
+        redraw_nessesary = false;
         return 0L;
         break; 
     case WM_CHAR:
@@ -157,6 +125,158 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
     return 0L;
 }
 
+int index_count = { 0 };
+void zoneGen(int index,/**/ int y_0, int y_1, int x_0, int x_1) {
+    int height = y_1 - y_0;
+    int width = x_1 - x_0;
+    zones.push_back(new zone(y_0, y_1, x_1, x_0));
+    for (int i = 1; i < Objects.size(); i++) {
+        if (zones[index]->Is_in_zone(Objects[i])) {
+            zones[index]->addObject(Objects[i]);
+        }
+    }
+    if (zones[index]->Has_Max_Objects(Objects_Per_Zone)) {
+        index_count++;
+        zoneGen(index_count,/**/ y_0, y_0 + height / 2, x_0, x_0 + width / 2);
+        index_count++;
+        zoneGen(index_count,/**/ y_0 + height / 2, y_1, x_0, x_0 + width / 2);
+        index_count++;
+        zoneGen(index_count,/**/ y_0, y_0 + height / 2, x_0 + width / 2, x_1);
+        index_count++;
+        zoneGen(index_count,/**/ y_0 + height / 2, y_1, x_0 + width / 2, x_1);
+        zones[index]->Delete();
+    }
+}
+
+void floorsetup(int floor_num) {
+    first_draw = true;
+    index_count = 0;
+    for (int i = 0; i < zones.size(); i++) {
+        zones[i]->Delete();
+        delete zones[i];
+    }
+    zones.clear();
+    for (int i = 0; i < Objects.size(); i++) {
+        delete Objects[i];
+    }
+    Objects.clear();
+
+    Object* ny = { nullptr };
+    Objects.push_back(ny = new Object(Image[0], 0, 0, imagesize, imagesize));
+    ny->layer = 2;
+    ny->Name = "Player";
+    int x = total_image_size / 2;
+    int y = total_image_size / 2;
+    for (int i = 0; i < fl[floor_num].x(); i++) {
+        for (int j = 0; j < fl[floor_num].y(); j++) {
+            if (fl[floor_num].readlocation(i, j) == 'W') {
+                Objects.push_back(ny = new Object(Image[4], x, y, imagesize, imagesize));
+                ny->Name = "Wall";
+                ny->collideableobject = true;
+            }
+            if (fl[floor_num].readlocation(i, j) == 'E') {
+                if (floor_num < fl.size() - 1) {
+                    Objects.push_back(ny = new Object(Image[5], x, y, imagesize, imagesize)); //Stair Object
+                    ny->Name = "Stair";
+                }
+                else {
+                    Objects.push_back(ny = new Object(Image[1], x, y, imagesize, imagesize)); //End Object
+                    ny->Name = "End";
+                }
+                ny->layer = 1;
+                ny->collideableobject = true;
+                Objects.push_back(ny = new Object(Image[3], x, y, imagesize, imagesize)); //Floor
+            }
+            if (fl[floor_num].readlocation(i, j) == 'S') {
+                Objects.push_back(ny = new Object(Image[2], x, y, imagesize, imagesize)); //Start Object
+                ny->collideableobject = true;
+                ny->Name = "Start";
+                ny->layer = 1;
+                Objects.push_back(ny = new Object(Image[3], x, y, imagesize, imagesize)); //Floor
+                Objects[0]->move(x, y);
+            }
+            if (fl[floor_num].readlocation(i, j) == ' ') {
+                Objects.push_back(ny = new Object(Image[3], x, y, imagesize, imagesize));
+            }
+            x += total_image_size;
+        }
+        x = total_image_size / 2;
+        y += total_image_size;
+    }
+    ny = new Object();
+    delete ny;
+
+    zoneGen(0,/**/ 0, screen_y, 0, screen_x);
+    for (int i = 0; i < zones.size(); i++) {
+        if (zones[i]->Is_in_zone(Objects[0]) && zones[i]->Objects_size() > 0) {
+            player_current_zone = i;
+            break;
+        }
+    }
+    zones[player_current_zone]->addPlayer(Objects[0]);
+}
+
+void Collision() {
+    int movement_change_x = Objects[0]->x(); //Object[0] is the player
+    int movement_change_y = Objects[0]->y();
+    bool hit{ false };
+    if (input.A) {
+        movement_change_x -= total_image_size;
+    }
+    if (input.D) {
+        movement_change_x += total_image_size;
+    }
+    if (input.W) {
+        movement_change_y -= total_image_size;
+    }
+    if (input.S) {
+        movement_change_y += total_image_size;
+    }
+    //check for collision
+    for (int i = 0; i < Objects.size(); i++) {
+        if (Objects[i]->collideableobject) {
+            //std::string h = "Hello There";
+            if ((Objects[i]->right_collider() > movement_change_x && Objects[i]->left_collider() < movement_change_x) &&
+                (Objects[i]->bottom_collider() > movement_change_y && Objects[i]->top_collider() < movement_change_y)) {
+                //std::string h1 = "General Kenobi";
+                if (Objects[i]->Name == "End") {
+                    run = false;
+                }
+                if (Objects[i]->Name == "Stair") {
+                    floor_index++;
+                    floorsetup(floor_index);
+                    redraw_nessesary = true;
+                    return;
+                }
+                else {
+                    hit = true;
+                }
+                break;
+            }
+        }
+    }
+    //Collision Event
+    if (!hit) {
+        Objects[0]->move(movement_change_x, movement_change_y);
+        for (int i = 0; i < zones.size(); i++) {
+            if (zones[i]->find_Player(Objects[0]) && (!zones[i]->Is_in_zone(Objects[0]))) {
+                player_prev_Zone = i;
+                for (int j = 0; j < zones.size(); j++) {
+                    if (zones[j]->Is_in_zone(Objects[0]) && zones[i]->Objects_size() > 0) {
+                        player_current_zone = j;
+                        Player_changedZone = true;
+                    }
+                }
+            }
+        }
+        if (Player_changedZone) {
+            zones[player_prev_Zone]->Remove_Player();
+            zones[player_current_zone]->addPlayer(Objects[0]);
+        }
+        redraw_nessesary = true;
+    }
+}
+
 int main()
 {
     FreeConsole();
@@ -173,9 +293,19 @@ int main()
         MessageBox(NULL, L"Could not register class", L"Error", MB_OK);
     }
 
-    screen_x = imagesize * x;
-    screen_y = imagesize * y;
-    HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_POPUP/*Don't Allow size change*/, (GetSystemMetrics(SM_CXSCREEN) / 2) - (screen_x / 2) + 150/2, (GetSystemMetrics(SM_CYSCREEN) / 2) - (screen_y / 2), screen_x + 150, screen_y, NULL, NULL, NULL, NULL);
+    fl.push_back(Floor("Assets/Floors/Floor1.txt"));
+    fl.push_back(Floor("Assets/Floors/Floor2.bmp"));
+
+    if (fullscreen) {
+        screen_x = GetSystemMetrics(SM_CXSCREEN); //Gets the computers screen dimentions for X
+        screen_y = GetSystemMetrics(SM_CYSCREEN); //Gets the computers screen dimentions for Y
+    }
+    else {
+        screen_x = imagesize * fl[0].x();
+        screen_y = imagesize * fl[0].y();
+    }
+
+    HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_POPUP/*Don't Allow size change*/, (GetSystemMetrics(SM_CXSCREEN) / 2) - (screen_x / 2), (GetSystemMetrics(SM_CYSCREEN) / 2) - (screen_y / 2), screen_x, screen_y, NULL, NULL, NULL, NULL);
     //HWND windowHandle = CreateWindow(L"Window in Console", NULL, WS_OVERLAPPEDWINDOW/*allow size change*//*, (GetSystemMetrics(SM_CXSCREEN) / 2) - (x * 10 / 2), (GetSystemMetrics(SM_CYSCREEN) / 2) - (y * 10 / 2), x * 10 + 100, y * 10 + 100, NULL, NULL, NULL, NULL);*/
     ShowWindow(windowHandle, SW_RESTORE);
 
@@ -183,81 +313,40 @@ int main()
 
     MSG messages;
 
-    Floor fl = Floor("Assets/Floors/Floor1.txt");
+    images* im = { nullptr };
+    Image.push_back(im = new images("Assets/Images/Player.bmp"));
+    Image.push_back(im = new images("Assets/Images/End.bmp"));
+    Image.push_back(im = new images("Assets/Images/Start.bmp"));
+    Image.push_back(im = new images("Assets/Images/Floor.bmp"));
+    Image.push_back(im = new images("Assets/Images/Wall.bmp"));
+    Image.push_back(im = new images("Assets/Images/Stair.bmp"));
+    im = new images();
+    delete im;
 
     total_image_size = imagesize;
-    Player_image = images("Assets/Images/Player.bmp", P_y * total_image_size + total_image_size / 2, P_x * total_image_size + total_image_size / 2, total_image_size);
-    Player_image.layer = 1;
 
-    images* ny = { nullptr };
-    for (int lx = 0; lx < screen_x; lx += total_image_size) {
-        for (int ly = 0; ly < screen_y; ly += total_image_size) {
-            if (fl.readlocation((ly) / (total_image_size), (lx) / (total_image_size)) == 'W') {
-                Objects.push_back(ny = new images("Assets/Images/Wall.bmp", lx + total_image_size / 2, ly + total_image_size / 2, total_image_size));
-            }
-            if (fl.readlocation((ly) / (total_image_size), (lx) / (total_image_size)) == 'E') {
-                Objects.push_back(ny = new images("Assets/Images/End.bmp", lx + total_image_size / 2, ly + total_image_size / 2, total_image_size));
-            }
-            if (fl.readlocation((ly) / (total_image_size), (lx) / (total_image_size)) == 'S') {
-                Objects.push_back(ny = new images("Assets/Images/Start.bmp", lx + total_image_size / 2, ly + total_image_size / 2, total_image_size));
-            }
-            if (fl.readlocation((ly) / (total_image_size), (lx) / (total_image_size)) == ' ') {
-                Objects.push_back(ny = new images("Assets/Images/Floor.bmp", lx + total_image_size / 2, ly + total_image_size / 2, total_image_size));
-            }
-        }
-    }
-    ny = new images();
-    delete ny;
+    floorsetup(floor_index/**/);
 
     while (run) {
-        game_timer++;
         GetMessage(&messages, NULL, 0, 0);
 
         TranslateMessage(&messages);
         DispatchMessage(&messages);
 
-        TextOutput_WS = L"Hello There\nGeneral Kenobi";
+        Collision();
 
-        if (input.A) {
-            if (fl.readlocation(P_x, P_y - 1) != 'W') {
-                P_y--;
-                //TextOutput_S = "A";
-                TextOutput_WS += L"\nA";
-            }
-        }
-        if (input.D) {
-            if (fl.readlocation(P_x, P_y + 1) != 'W') {
-                P_y++;
-                //TextOutput_S = "D";
-                TextOutput_WS += L"\nD";
-            }
-        }
-        if (input.W) {
-            if (fl.readlocation(P_x - 1, P_y) != 'W' && fl.readlocation(P_x, P_y) != 'S') {
-                P_x--;
-                //TextOutput_S = "W";
-                TextOutput_WS += L"\nW";
-            }
-        }
-        if (input.S) {
-            if (fl.readlocation(P_x + 1, P_y) != 'W'){
-                P_x++;
-                //TextOutput_S = "S";
-                TextOutput_WS += L"\nS";
-            }
-        }
-        Player_image.move(P_y* total_image_size + total_image_size / 2, P_x* total_image_size + total_image_size / 2);
-        RedrawWindow(windowHandle, NULL, NULL, RDW_INVALIDATE);
-        GetMessage(&messages, NULL, 0, 0);
+        if (redraw_nessesary)
+        {
+            RedrawWindow(windowHandle, NULL, NULL, RDW_INVALIDATE);
+            GetMessage(&messages, NULL, 0, 0);
 
-        TranslateMessage(&messages);
-        DispatchMessage(&messages);
-
-        if (fl.readlocation(P_x, P_y) == 'E') {
-            DestroyWindow(windowHandle);
-            run = false;
+            TranslateMessage(&messages);
+            DispatchMessage(&messages);
         }
+        //game_timer++;
     }
+
+    DestroyWindow(windowHandle);
 
     ReleaseDC(windowHandle, someHDC);
     DeleteObject(windowHandle);
