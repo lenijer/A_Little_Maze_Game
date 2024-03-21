@@ -15,6 +15,7 @@
 #include "Basic/pixel.h"
 #include "Basic/images.h"
 #include "Basic/Input.h"
+#include "Basic/Animation.h"
 #include "Object_Classes/Floor.h"
 #include "Object_Classes/Object.h"
 
@@ -28,6 +29,7 @@ std::vector <Object*> Objects;
 std::vector <images*> Image;
 std::vector <Floor> fl;
 std::vector <zone*> zones;
+std::vector <Animation*> Animations;
 zone* textzone;
 
 int screen_x;
@@ -70,15 +72,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) 
     case WM_KEYDOWN:
         if (wparam == 0x41/*A key https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes */ || wparam == 0x25 /*left arrow key*/) {
             input.A = true;
+            Objects[0]->anima()->UpdateAnimation(0);
         }
         if (wparam == 0x44/*D key*/ || wparam == 0x27 /*right arrow key*/) {
             input.D = true;
+            Objects[0]->anima()->UpdateAnimation(2);
         }
         if (wparam == 0x53/*S key*/ || wparam == 0x28 /*down arrow key*/) {
             input.S = true;
+            Objects[0]->anima()->UpdateAnimation(1);
         }
         if (wparam == 0x57/*W key*/ || wparam == 0x26 /*up arrow key*/) {
             input.W = true;
+            Objects[0]->anima()->UpdateAnimation(3);
         }
         return 0L;
         break;
@@ -180,7 +186,7 @@ void floorsetup(int floor_num) {
     textchange = true;
 
     Object* ny = { nullptr };
-    Objects.push_back(ny = new Object(Image[0], 0, 0, imagesize, imagesize));
+    Objects.push_back(ny = new Object(Animations[0], 0, 0, imagesize, imagesize));
     ny->layer = 2;
     ny->Name = "Player";
     int x = total_image_size / 2;
@@ -339,8 +345,14 @@ int main()
     Image.push_back(im = new images("Assets/Images/Wall.bmp"));
     Image.push_back(im = new images("Assets/Images/Stair.bmp"));
     Image.push_back(im = new images("Assets/Images/DefaultBackground.bmp"));
+    //Image.push_back(im = new images("Assets/Images/PlayerAnm.bmp"));
     im = new images();
     delete im;
+
+    Animation* anm = { nullptr };
+    Animations.push_back(anm = new Animation("Assets/Images/PlayerAnm.bmp"));
+    anm = new Animation();
+    delete anm;
 
     total_image_size = imagesize;
 

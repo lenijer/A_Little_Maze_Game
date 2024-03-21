@@ -14,21 +14,21 @@ images* blend_images(images* i1, images* i2) {
     int r1, g1, b1, r2, b2, g2, a;
     float r, g, b;
     for (int k = 0; k < i1->Vector_Length(); k++) {
-        r1 = i1->GetPixel(k).GetColour().GetRed();
-        g1 = i1->GetPixel(k).GetColour().GetGreen();
-        b1 = i1->GetPixel(k).GetColour().GetBlue();
-        a = i1->GetPixel(k).GetColour().GetAlpha();
+        r1 = i1->GetPixel(k)->GetColour().GetRed();
+        g1 = i1->GetPixel(k)->GetColour().GetGreen();
+        b1 = i1->GetPixel(k)->GetColour().GetBlue();
+        a = i1->GetPixel(k)->GetColour().GetAlpha();
 
-        r2 = i2->GetPixel(i1->GetPixel(k).get_x(), i1->GetPixel(k).get_y()).GetColour().GetRed();
-        g2 = i2->GetPixel(i1->GetPixel(k).get_x(), i1->GetPixel(k).get_y()).GetColour().GetGreen();
-        b2 = i2->GetPixel(i1->GetPixel(k).get_x(), i1->GetPixel(k).get_y()).GetColour().GetBlue();
+        r2 = i2->GetPixel(i1->GetPixel(k)->get_x(), i1->GetPixel(k)->get_y()).GetColour().GetRed();
+        g2 = i2->GetPixel(i1->GetPixel(k)->get_x(), i1->GetPixel(k)->get_y()).GetColour().GetGreen();
+        b2 = i2->GetPixel(i1->GetPixel(k)->get_x(), i1->GetPixel(k)->get_y()).GetColour().GetBlue();
 
         r = r1 * ((float)a / 255) + r2 * ((255 - (float)a) / 255);
         g = g1 * ((float)a / 255) + g2 * ((255 - (float)a) / 255);
         b = b1 * ((float)a / 255) + b2 * ((255 - (float)a) / 255);
 
         colour c = colour((int)r, (int)g, (int)b, 255);
-        pixel* p = new pixel(c, i1->GetPixel(k).get_x(), i1->GetPixel(k).get_y());
+        pixel* p = new pixel(c, i1->GetPixel(k)->get_x(), i1->GetPixel(k)->get_y());
         pix_arr.push_back(p);
     }
     return new images(pix_arr);

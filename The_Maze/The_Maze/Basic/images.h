@@ -25,8 +25,9 @@ public:
 	const int Vector_Length() { return pixels.size(); }
 	const bool HasTransparentPixels() { return hastransparentpixels; }
 
-	pixel GetPixel(int index) { return *pixels[index]; }
+	pixel* GetPixel(int index) { return pixels[index]; }
 	pixel GetPixel(int x, int y);
+	std::vector <pixel*> pixelsbetween(int x_max, int y_max, int x_min, int y_min);
 
 	void move(int new_x, int new_y);
 	void draw(HDC hdc);

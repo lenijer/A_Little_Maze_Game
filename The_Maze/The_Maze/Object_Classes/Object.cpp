@@ -19,10 +19,27 @@ Object::Object(images* image, int x, int y, int sizeX, int sizeY)
 	collider[3] = Loc[1] + Size[1] / 2; //y_1
 }
 
+Object::Object(Animation* animations, int x, int y, int sizeX, int sizeY)
+{
+	usesanm = true;
+	anm = animations;
+	Loc[0] = x;
+	Loc[1] = y;
+	Size[0] = sizeX;
+	Size[1] = sizeY;
+	collider[0] = Loc[0] - Size[0] / 2; //x_0
+	collider[1] = Loc[0] + Size[0] / 2; //x_1
+	collider[2] = Loc[1] - Size[1] / 2; //y_0
+	collider[3] = Loc[1] + Size[1] / 2; //y_1
+}
+
 images* Object::image()
 {
 	if (usetmpimg) {
 		return tmp_img;
+	}
+	if (usesanm) {
+		return anm->GetFrame();
 	}
 	return img;
 }
@@ -35,7 +52,6 @@ void Object::move(int new_x, int new_y)
 	collider[1] = Loc[0] + Size[0] / 2; //x_1
 	collider[2] = Loc[1] - Size[1] / 2; //y_0
 	collider[3] = Loc[1] + Size[1] / 2; //y_1
-	//img->move(Loc[0], Loc[1]);
 }
 
 void Object::add_temp_image(images* image)
@@ -51,6 +67,9 @@ void Object::draw_Object(HDC hdc)
 		tmp_img->Delete();
 		usetmpimg = false;
 		delete tmp_img;
+	}
+	else if (usesanm) {
+		anm->DrawAnimation(collider[0], collider[2], hdc);
 	}
 	else {
 		img->draw_on_location(hdc, Loc[0], Loc[1]);

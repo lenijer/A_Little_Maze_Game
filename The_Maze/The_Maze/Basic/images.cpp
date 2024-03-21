@@ -344,6 +344,21 @@ pixel images::GetPixel(int x, int y)
 	return p;
 }
 
+std::vector<pixel*> images::pixelsbetween(int x_max, int y_max, int x_min, int y_min)
+{
+	std::vector <pixel*> p;
+	for (int i = 0; i < pixels.size(); i++) {
+		for (int x = x_min; x < x_max; x++) {
+			for (int y = y_min; y < y_max; y++) {
+				if (pixels[i]->get_x() == x && pixels[i]->get_y() == y) {
+					p.push_back(pixels[i]);
+				}
+			}
+		}
+	}
+	return p;
+}
+
 void images::move(int new_x, int new_y)
 {
 	int changed_x = new_x - loc[0];

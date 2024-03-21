@@ -8,11 +8,13 @@
 #include <string>
 
 #include "../Basic/images.h"
+#include "../Basic/Animation.h"
 class Object
 {
 public:
 	Object() { };
 	Object(images* image, int x, int y, int sizeX = 16, int sizeY = 16);
+	Object(Animation* animations, int x, int y, int sizeX = 16, int sizeY = 16);
 	~Object() { };
 
 	std::string Name; //should this be private?
@@ -27,6 +29,7 @@ public:
 	const int bottom_collider() { return collider[3]; }
 
 	images* image();
+	Animation* anima() { return anm; }
 
 	void move(int new_x, int new_y);
 	void add_temp_image(images* image);
@@ -34,7 +37,9 @@ public:
 private:
 	int Loc[2]; //Is going to be in the centre of the object
 	int Size[2];
-	images* img;
+	Animation* anm{ nullptr };
+	bool usesanm{ false };
+	images* img{ nullptr };
 	int collider[4]; //TODO: Make an actual collider class
 
 	images* tmp_img{ nullptr };
