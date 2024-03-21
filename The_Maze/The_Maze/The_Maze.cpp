@@ -43,10 +43,7 @@ bool Player_changedZone{ false };
 int player_prev_Zone{ 0 };
 int player_current_zone{ 0 };
 bool textchange{ true };
-//std::string TextOutput_S = "Hello there";
 std::wstring TextOutput_WS = L"";
-//LPCWSTR TextOutput_LPC = L"Hello There\nGeneral Kenobi";
-//TCHAR TextOutput_Tchr[] = "Hello there";
 
 void Draw() {
     if (first_draw)
@@ -68,11 +65,6 @@ void Draw() {
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
-    //https://stackoverflow.com/questions/27220/how-to-convert-stdstring-to-lpcwstr-in-c-unicode
-    //std::string s = "Hi";
-    /*std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    std::wstring wide = converter.from_bytes(TextOutput_S);
-    LPCWSTR result = wide.c_str();*/
     switch (message)
     {
     case WM_KEYDOWN:
@@ -263,10 +255,8 @@ void Collision() {
     //check for collision
     for (int i = 0; i < Objects.size(); i++) {
         if (Objects[i]->collideableobject) {
-            //std::string h = "Hello There";
             if ((Objects[i]->right_collider() > movement_change_x && Objects[i]->left_collider() < movement_change_x) &&
                 (Objects[i]->bottom_collider() > movement_change_y && Objects[i]->top_collider() < movement_change_y)) {
-                //std::string h1 = "General Kenobi";
                 if (Objects[i]->Name == "End") {
                     run = false;
                 }
